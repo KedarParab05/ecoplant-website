@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoPlant — Bring Nature Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-50:#f0faf2;--green-100:#d8f3de;--green-200:#a8e4b4;--green-400:#48b566;--green-500:#2d8a47;--green-600:#1e6b34;--green-700:#154d26;--green-800:#0e3319;
+    --sage-50:#f5f7f3;--sage-100:#e6ebe0;--sage-200:#c8d3bc;--sage-400:#8fa67e;--sage-600:#5a7349;--sage-700:#3e5232;
+    --earth-50:#fdf8f3;--earth-100:#f5e8d5;--earth-300:#dbb98a;--earth-500:#b07d3a;--earth-700:#6e4c1e;
+    --cream:#fffef9;--white:#ffffff;--dark:#0f1a0f;--text:#1a2e1a;--muted:#5a7349;
+    --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+    --shadow-md:0 4px 16px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.04);
+    --shadow-lg:0 12px 40px rgba(0,0,0,.10),0 4px 12px rgba(0,0,0,.05);
+    --shadow-xl:0 24px 60px rgba(0,0,0,.12),0 8px 20px rgba(0,0,0,.06);
+    --r-sm:8px;--r-md:14px;--r-lg:22px;--r-xl:32px;--r-full:9999px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;font-size:16px}
+  body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--text);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.2}
+  a{text-decoration:none;color:inherit}
+  img{max-width:100%;display:block}
+  button{cursor:pointer;font-family:'Outfit',sans-serif}
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:var(--sage-50)}
+  ::-webkit-scrollbar-thumb{background:var(--sage-200);border-radius:3px}
+
+  /* HEADER */
+  .header{position:sticky;top:0;z-index:100;background:rgba(255,254,249,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--green-100);transition:box-shadow .3s}
+  .header.scrolled{box-shadow:var(--shadow-sm)}
+  .header-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--green-600)}
+  .logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--green-500),var(--green-400));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0}
+  .nav{display:flex;align-items:center;gap:4px}
+  .nav a{padding:7px 14px;border-radius:var(--r-full);font-size:14px;font-weight:500;color:var(--muted);transition:all .2s}
+  .nav a:hover,.nav a.active{background:var(--green-50);color:var(--green-600)}
+  .header-actions{display:flex;align-items:center;gap:8px}
+  .btn-icon{width:38px;height:38px;border-radius:var(--r-full);border:none;background:transparent;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .2s;position:relative}
+  .btn-icon:hover{background:var(--green-50);color:var(--green-600)}
+  .cart-badge{position:absolute;top:-2px;right:-2px;background:var(--green-500);color:#fff;border-radius:var(--r-full);width:18px;height:18px;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;border:2px solid var(--cream)}
+  .btn-primary{background:var(--green-500);color:#fff;border:none;padding:9px 20px;border-radius:var(--r-full);font-size:14px;font-weight:600;transition:all .2s;white-space:nowrap}
+  .btn-primary:hover{background:var(--green-600);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+  .btn-secondary{background:transparent;color:var(--green-600);border:1.5px solid var(--green-200);padding:9px 20px;border-radius:var(--r-full);font-size:14px;font-weight:600;transition:all .2s}
+  .btn-secondary:hover{background:var(--green-50);border-color:var(--green-400)}
+  .hamburger{display:none;flex-direction:column;gap:5px;width:38px;height:38px;align-items:center;justify-content:center;background:none;border:none}
+  .hamburger span{display:block;width:22px;height:2px;background:var(--muted);border-radius:2px;transition:.3s}
+
+  /* HERO */
+  .hero{min-height:calc(100vh - 68px);display:grid;grid-template-columns:1fr 1fr;gap:0;overflow:hidden;position:relative}
+  .hero-content{display:flex;flex-direction:column;justify-content:center;padding:80px 60px 80px 80px;max-width:680px}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--green-50);border:1px solid var(--green-200);color:var(--green-600);border-radius:var(--r-full);padding:7px 16px;font-size:13px;font-weight:600;margin-bottom:28px;width:fit-content}
+  .hero-badge-dot{width:7px;height:7px;background:var(--green-400);border-radius:50%;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
+  .hero h1{font-size:clamp(42px,5vw,72px);font-weight:700;color:var(--dark);margin-bottom:20px;letter-spacing:-.5px}
+  .hero h1 span{color:var(--green-500);position:relative}
+  .hero h1 span::after{content:'';position:absolute;bottom:2px;left:0;right:0;height:3px;background:var(--green-200);border-radius:2px;z-index:-1}
+  .hero-desc{font-size:18px;color:var(--muted);line-height:1.7;margin-bottom:36px;max-width:480px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:48px}
+  .hero-cta .btn-primary,.hero-cta .btn-secondary{padding:14px 28px;font-size:16px}
+  .hero-stats{display:flex;gap:36px;flex-wrap:wrap}
+  .hero-stat-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--dark)}
+  .hero-stat-label{font-size:13px;color:var(--muted)}
+  .hero-visual{position:relative;overflow:hidden;background:var(--green-50)}
+  .hero-visual-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;height:100%;gap:0}
+  .hero-img{overflow:hidden;position:relative}
+  .hero-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+  .hero-img:hover img{transform:scale(1.04)}
+  .hero-float-card{position:absolute;bottom:60px;left:-20px;background:#fff;border-radius:var(--r-lg);padding:14px 18px;box-shadow:var(--shadow-xl);display:flex;align-items:center;gap:12px;z-index:10;animation:floatCard 3s ease-in-out infinite}
+  @keyframes floatCard{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .float-icon{width:42px;height:42px;background:var(--green-50);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .float-card-title{font-size:13px;font-weight:600;color:var(--dark)}
+  .float-card-sub{font-size:12px;color:var(--muted)}
+  .hero-float-card2{position:absolute;top:40px;right:20px;background:#fff;border-radius:var(--r-lg);padding:12px 16px;box-shadow:var(--shadow-lg);z-index:10;animation:floatCard 3s ease-in-out infinite .5s}
+
+  /* MARQUEE */
+  .marquee-section{background:var(--green-600);padding:14px 0;overflow:hidden}
+  .marquee-track{display:flex;gap:0;animation:marquee 25s linear infinite}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .marquee-item{display:flex;align-items:center;gap:10px;padding:0 32px;white-space:nowrap;color:var(--green-100);font-size:14px;font-weight:500}
+  .marquee-item span{color:var(--green-200);font-size:16px}
+
+  /* SECTIONS */
+  .section{padding:80px 24px}
+  .section-center{max-width:1280px;margin:0 auto}
+  .section-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:48px;gap:20px;flex-wrap:wrap}
+  .section-header-left h2{font-size:clamp(28px,3vw,42px);color:var(--dark);margin-bottom:8px}
+  .section-header-left p{color:var(--muted);font-size:16px}
+  .view-all{display:inline-flex;align-items:center;gap:6px;color:var(--green-600);font-weight:600;font-size:14px;transition:gap .2s}
+  .view-all:hover{gap:10px}
+
+  /* FILTER */
+  .filter-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--sage-50);border-radius:var(--r-xl);padding:16px 20px;margin-bottom:32px;justify-content:space-between}
+  .filter-chips{display:flex;gap:8px;flex-wrap:wrap}
+  .filter-chip{padding:7px 16px;border-radius:var(--r-full);border:none;background:transparent;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .2s}
+  .filter-chip.active{background:#fff;color:var(--green-600);box-shadow:var(--shadow-sm);font-weight:600}
+  .filter-chip:hover:not(.active){background:rgba(255,255,255,.6);color:var(--green-600)}
+  .sort-select{padding:7px 14px;border-radius:var(--r-full);border:1.5px solid var(--green-100);background:#fff;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);cursor:pointer;outline:none}
+
+  /* PLANT GRID */
+  .plant-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  .plant-card{background:#fff;border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-sm);transition:all .35s;position:relative;cursor:pointer}
+  .plant-card:hover{box-shadow:var(--shadow-xl);transform:translateY(-6px)}
+  .plant-card-img{position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--green-50)}
+  .plant-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+  .plant-card:hover .plant-card-img img{transform:scale(1.08)}
+  .plant-card-badges{position:absolute;top:12px;left:12px;display:flex;flex-direction:column;gap:6px}
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:var(--r-full);font-size:11px;font-weight:600}
+  .badge-green{background:rgba(255,255,255,.92);color:var(--green-600);backdrop-filter:blur(8px)}
+  .badge-sage{background:rgba(255,255,255,.85);color:var(--sage-600);backdrop-filter:blur(8px)}
+  .badge-new{background:var(--green-500);color:#fff}
+  .badge-sale{background:#ef4444;color:#fff}
+  .badge-care{font-size:11px;padding:3px 9px}
+  .badge-low-care{background:var(--green-50);color:var(--green-700);border:1px solid var(--green-200)}
+  .badge-med-care{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+  .badge-high-care{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+  .plant-card-save{position:absolute;top:12px;right:12px;width:34px;height:34px;background:rgba(255,255,255,.9);border:none;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;font-size:16px;opacity:0;transform:translateY(-4px);transition:all .25s;backdrop-filter:blur(8px)}
+  .plant-card:hover .plant-card-save{opacity:1;transform:translateY(0)}
+  .plant-card-save.saved{opacity:1;color:#ef4444}
+  .plant-co2{position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);border-radius:var(--r-full);padding:5px 12px;font-size:11px;font-weight:600;color:var(--green-700)}
+  .plant-card-body{padding:16px}
+  .plant-name{font-size:16px;font-weight:600;color:var(--dark);margin-bottom:3px}
+  .plant-sci{font-size:12px;color:var(--muted);font-style:italic;margin-bottom:10px}
+  .plant-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .plant-price-row{display:flex;align-items:center;justify-content:space-between}
+  .plant-price{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--green-600)}
+  .plant-price-old{font-size:13px;color:var(--muted);text-decoration:line-through;margin-left:6px}
+  .add-cart-btn{width:36px;height:36px;background:var(--green-500);border:none;border-radius:var(--r-full);color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  .add-cart-btn:hover{background:var(--green-600);transform:scale(1.1)}
+  .load-more-wrap{text-align:center;margin-top:40px}
+  .load-more-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--green-200);color:var(--green-600);padding:12px 28px;border-radius:var(--r-full);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+  .load-more-btn:hover{background:var(--green-50);border-color:var(--green-400)}
+
+  /* FEATURES STRIP */
+  .features-strip{background:var(--green-600);border-radius:var(--r-xl);padding:48px;margin:0 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
+  .feature-item{text-align:center;color:var(--green-100)}
+  .feature-icon{width:56px;height:56px;background:rgba(255,255,255,.15);border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px}
+  .feature-item h3{font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:#fff;margin-bottom:6px}
+  .feature-item p{font-size:13px;opacity:.75}
+
+  /* CARE TIPS */
+  .care-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  .care-card{background:#fff;border-radius:var(--r-xl);padding:28px;box-shadow:var(--shadow-sm);transition:all .3s;text-align:center}
+  .care-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px)}
+  .care-icon{width:60px;height:60px;border-radius:var(--r-lg);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px}
+  .care-card h3{font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;color:var(--dark);margin-bottom:8px}
+  .care-card p{font-size:13px;color:var(--muted);line-height:1.6}
+
+  /* ECO IMPACT */
+  .eco-section{background:var(--dark);border-radius:var(--r-xl);margin:0 24px;padding:64px;color:#fff;position:relative;overflow:hidden}
+  .eco-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(45,138,71,.25) 0%,transparent 60%)}
+  .eco-inner{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+  .eco-label{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--r-full);padding:7px 16px;font-size:13px;color:var(--green-200);margin-bottom:24px}
+  .eco-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .eco-stat-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-lg);padding:20px 24px}
+  .eco-stat-num{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:#fff;margin-bottom:4px}
+  .eco-stat-label{font-size:13px;color:rgba(255,255,255,.5)}
+  .eco-visual{border-radius:var(--r-xl);overflow:hidden;aspect-ratio:4/3}
+  .eco-visual img{width:100%;height:100%;object-fit:cover}
+  .eco-tree-anim{display:flex;gap:8px;align-items:flex-end;height:80px;margin-top:20px}
+  .eco-tree-bar{border-radius:var(--r-sm) var(--r-sm) 0 0;background:var(--green-400);animation:growBar .8s ease-out forwards;transform-origin:bottom}
+  @keyframes growBar{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+
+  /* TESTIMONIALS */
+  .testimonial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .testimonial-card{background:#fff;border-radius:var(--r-xl);padding:28px;box-shadow:var(--shadow-sm);transition:all .3s}
+  .testimonial-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px)}
+  .testimonial-stars{color:#f59e0b;font-size:16px;margin-bottom:16px}
+  .testimonial-text{font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px;font-style:italic}
+  .author-avatar{width:42px;height:42px;border-radius:var(--r-full);background:var(--green-100);display:flex;align-items:center;justify-content:center;font-size:16px}
+  .author-name{font-size:14px;font-weight:600;color:var(--dark)}
+  .author-role{font-size:12px;color:var(--muted)}
+
+  /* PLANT DOCTOR */
+  .doctor-section{background:var(--sage-50);border-radius:var(--r-xl);margin:0 24px;padding:64px}
+  .doctor-inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+  .doctor-demo{background:#fff;border-radius:var(--r-xl);padding:24px;box-shadow:var(--shadow-lg)}
+  .doctor-upload{border:2px dashed var(--green-200);border-radius:var(--r-lg);padding:40px;text-align:center;cursor:pointer;transition:all .3s}
+  .doctor-upload:hover{border-color:var(--green-400);background:var(--green-50)}
+  .doctor-upload.dragover{border-color:var(--green-500);background:var(--green-50);border-style:solid}
+  .doctor-upload-icon{font-size:40px;margin-bottom:12px}
+  .doctor-upload p{color:var(--muted);font-size:14px}
+  .doctor-result{display:none;margin-top:20px;padding:20px;background:var(--green-50);border-radius:var(--r-lg)}
+  .health-indicator{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .health-dot{width:12px;height:12px;border-radius:50%;background:var(--green-400)}
+  .health-dot.warning{background:#f59e0b}
+  .health-dot.danger{background:#ef4444}
+
+  /* NEWSLETTER */
+  .newsletter{background:var(--green-500);border-radius:var(--r-xl);margin:0 24px;padding:56px;text-align:center;position:relative;overflow:hidden}
+  .newsletter-bg{position:absolute;inset:0;opacity:.05}
+  .newsletter-bg div{position:absolute;border-radius:50%;background:#fff}
+  .newsletter-bg div:nth-child(1){width:300px;height:300px;top:-100px;left:-100px}
+  .newsletter-bg div:nth-child(2){width:200px;height:200px;bottom:-80px;right:100px}
+  .newsletter h2{color:#fff;font-size:clamp(24px,3vw,38px);margin-bottom:12px}
+  .newsletter p{color:rgba(255,255,255,.8);font-size:16px;margin-bottom:32px}
+  .newsletter-form{display:flex;max-width:480px;margin:0 auto;border-radius:var(--r-full);overflow:hidden;background:#fff;padding:4px;box-shadow:var(--shadow-lg)}
+  .newsletter-input{flex:1;border:none;padding:10px 20px;font-family:'Outfit',sans-serif;font-size:15px;color:var(--dark);background:transparent;outline:none}
+  .newsletter-btn{background:var(--green-600);color:#fff;border:none;padding:10px 24px;border-radius:var(--r-full);font-size:14px;font-weight:600;transition:all .2s}
+
+  /* CART DRAWER */
+  .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px)}
+  .cart-overlay.open{opacity:1;pointer-events:all}
+  .cart-drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:100vw;background:#fff;z-index:201;transform:translateX(100%);transition:transform .35s ease;display:flex;flex-direction:column}
+  .cart-drawer.open{transform:translateX(0)}
+  .cart-header{padding:24px;border-bottom:1px solid var(--green-100);display:flex;align-items:center;justify-content:space-between}
+  .cart-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700}
+  .cart-close{width:36px;height:36px;border:none;background:var(--green-50);border-radius:var(--r-full);font-size:18px;cursor:pointer}
+  .cart-body{flex:1;overflow-y:auto;padding:20px 24px}
+  .cart-empty{text-align:center;padding:60px 20px;color:var(--muted)}
+  .cart-item{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--green-50)}
+  .cart-item-img{width:72px;height:80px;border-radius:var(--r-md);overflow:hidden;background:var(--green-50);flex-shrink:0}
+  .cart-item-img img{width:100%;height:100%;object-fit:cover}
+  .cart-item-name{font-size:14px;font-weight:600;color:var(--dark);margin-bottom:4px}
+  .cart-item-price{font-size:15px;font-weight:700;color:var(--green-600)}
+  .cart-item-qty{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .qty-btn{width:26px;height:26px;border-radius:var(--r-full);border:1px solid var(--green-200);background:#fff;font-size:14px;cursor:pointer}
+  .qty-num{font-size:14px;font-weight:600;min-width:20px;text-align:center}
+  .cart-remove{background:none;border:none;font-size:14px;cursor:pointer;opacity:.6}
+  .cart-footer{padding:20px 24px;border-top:1px solid var(--green-100)}
+  .cart-total-row{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:8px}
+  .cart-total-main{display:flex;justify-content:space-between;font-size:18px;font-weight:700;color:var(--dark);margin:12px 0}
+  .checkout-btn{width:100%;background:var(--green-500);color:#fff;border:none;padding:14px;border-radius:var(--r-full);font-size:15px;font-weight:600;cursor:pointer;transition:.2s;margin-bottom:10px}
+  .checkout-btn:hover{background:var(--green-600)}
+  .cart-co2-note{font-size:12px;color:var(--muted);text-align:center}
+
+  /* SEARCH MODAL */
+  .search-modal{position:fixed;inset:0;background:rgba(15,26,15,.5);z-index:300;display:none;align-items:flex-start;justify-content:center;padding-top:80px;backdrop-filter:blur(8px)}
+  .search-modal.open{display:flex}
+  .search-box{background:#fff;border-radius:var(--r-xl);width:100%;max-width:640px;box-shadow:var(--shadow-xl);overflow:hidden}
+  .search-input-wrap{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--green-100)}
+  .search-input{flex:1;border:none;font-family:'Outfit',sans-serif;font-size:16px;color:var(--dark);outline:none}
+  .search-result-item{display:flex;align-items:center;gap:14px;padding:12px 20px;cursor:pointer;transition:.2s}
+  .search-result-item:hover{background:var(--green-50)}
+  .search-result-name{font-size:14px;font-weight:600;color:var(--dark)}
+
+  /* MOBILE MENU */
+  .mobile-menu{position:fixed;inset:0;background:#fff;z-index:400;transform:translateX(-100%);transition:transform .35s ease;padding:24px;display:flex;flex-direction:column;gap:8px}
+  .mobile-menu.open{transform:translateX(0)}
+  .mobile-menu-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+  .mobile-menu a{padding:14px;border-radius:var(--r-lg);font-size:16px;font-weight:500;color:var(--text);display:block;transition:.2s}
+  .mobile-menu a:hover{background:var(--green-50);color:var(--green-600)}
+
+  /* TOAST */
+  .toast-container{position:fixed;bottom:24px;right:24px;z-index:500;display:flex;flex-direction:column;gap:10px}
+  .toast{background:#fff;border-radius:var(--r-lg);padding:14px 18px;box-shadow:var(--shadow-xl);display:flex;align-items:center;gap:12px;transform:translateX(120%);transition:.4s;border-left:4px solid var(--green-400);min-width:280px}
+  .toast.show{transform:translateX(0)}
+  .toast-icon{font-size:20px}
+  .toast-msg{font-size:14px;font-weight:600;color:var(--dark)}
+  .toast-sub{font-size:12px;color:var(--muted)}
+
+  /* FADE UP */
+  .fade-up{opacity:0;transform:translateY(30px);transition:all .6s ease}
+  .fade-up.visible{opacity:1;transform:translateY(0)}
+
+  /* FOOTER */
+  footer{background:var(--dark);color:rgba(255,255,255,.7);padding:64px 24px 32px}
+  .footer-inner{max-width:1280px;margin:0 auto}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+  .footer-brand p{font-size:14px;line-height:1.7;margin-bottom:20px;max-width:280px}
+  .footer-socials{display:flex;gap:10px}
+  .social-btn{width:36px;height:36px;background:rgba(255,255,255,.1);border:none;border-radius:var(--r-full);color:#fff;font-size:14px;cursor:pointer;transition:.2s}
+  .social-btn:hover{background:var(--green-600)}
+  .footer-col h4{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:#fff;margin-bottom:16px}
+  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .footer-col ul li a{font-size:14px;transition:.2s}
+  .footer-col ul li a:hover{color:var(--green-400)}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:13px}
+  .footer-badges{display:flex;gap:12px;flex-wrap:wrap}
+  .footer-badge{background:rgba(255,255,255,.08);border-radius:var(--r-full);padding:5px 12px;font-size:12px}
+
+  /* ── AI CHATBOX ── */
+  .chat-fab{position:fixed;bottom:28px;left:28px;z-index:400;background:linear-gradient(135deg,var(--green-500),var(--green-400));border:none;border-radius:var(--r-full);width:58px;height:58px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:var(--shadow-xl);cursor:pointer;transition:all .3s;animation:fabPop .5s ease}
+  @keyframes fabPop{0%{transform:scale(0)}80%{transform:scale(1.1)}100%{transform:scale(1)}}
+  .chat-fab:hover{transform:scale(1.08);box-shadow:0 16px 40px rgba(45,138,71,.4)}
+  .chat-fab-badge{position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;border-radius:var(--r-full);width:18px;height:18px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--cream)}
+
+  .chat-panel{position:fixed;bottom:100px;left:28px;z-index:401;width:380px;max-width:calc(100vw - 40px);background:#fff;border-radius:var(--r-xl);box-shadow:var(--shadow-xl);display:none;flex-direction:column;overflow:hidden;max-height:600px;border:1px solid var(--green-100)}
+  .chat-panel.open{display:flex;animation:slideUp .3s ease}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+  .chat-panel-header{background:linear-gradient(135deg,var(--green-600),var(--green-500));padding:18px 20px;display:flex;align-items:center;gap:12px}
+  .chat-avatar{width:40px;height:40px;background:rgba(255,255,255,.2);border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;font-size:20px}
+  .chat-header-info{flex:1}
+  .chat-header-name{font-size:15px;font-weight:600;color:#fff}
+  .chat-header-status{font-size:12px;color:rgba(255,255,255,.75);display:flex;align-items:center;gap:5px}
+  .chat-status-dot{width:7px;height:7px;background:#4ade80;border-radius:50%}
+  .chat-close-btn{background:rgba(255,255,255,.2);border:none;border-radius:var(--r-full);width:30px;height:30px;color:#fff;font-size:16px;cursor:pointer}
+
+  .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;max-height:380px;min-height:200px}
+  .chat-message{display:flex;gap:8px;align-items:flex-end;max-width:90%}
+  .chat-message.user{align-self:flex-end;flex-direction:row-reverse}
+  .chat-msg-avatar{width:28px;height:28px;border-radius:var(--r-full);background:var(--green-100);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .chat-msg-bubble{padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.5;max-width:calc(100% - 40px)}
+  .chat-message.bot .chat-msg-bubble{background:var(--green-50);color:var(--text);border-bottom-left-radius:4px}
+  .chat-message.user .chat-msg-bubble{background:var(--green-500);color:#fff;border-bottom-right-radius:4px}
+  .chat-typing{display:flex;gap:5px;align-items:center;padding:10px 14px;background:var(--green-50);border-radius:18px;border-bottom-left-radius:4px;width:fit-content}
+  .typing-dot{width:7px;height:7px;background:var(--green-400);border-radius:50%;animation:typingBounce 1.2s infinite}
+  .typing-dot:nth-child(2){animation-delay:.2s}
+  .typing-dot:nth-child(3){animation-delay:.4s}
+  @keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+  .chat-quick-replies{display:flex;gap:8px;padding:0 16px 10px;flex-wrap:wrap}
+  .quick-reply{padding:6px 12px;border-radius:var(--r-full);border:1.5px solid var(--green-200);background:#fff;font-size:12px;font-weight:500;color:var(--green-600);cursor:pointer;transition:.2s;white-space:nowrap}
+  .quick-reply:hover{background:var(--green-50);border-color:var(--green-400)}
+
+  .chat-input-area{padding:12px 16px;border-top:1px solid var(--green-100);display:flex;gap:8px}
+  .chat-input{flex:1;border:1.5px solid var(--green-100);border-radius:var(--r-full);padding:9px 16px;font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:.2s}
+  .chat-input:focus{border-color:var(--green-400)}
+  .chat-send-btn{width:38px;height:38px;background:var(--green-500);border:none;border-radius:var(--r-full);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0}
+  .chat-send-btn:hover{background:var(--green-600)}
+  .chat-send-btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* QUIZ */
+  .quiz-section{background:var(--sage-50);border-radius:var(--r-xl);padding:64px;margin:0 24px}
+  .quiz-inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+  .quiz-content h2{font-size:clamp(28px,3vw,40px);color:var(--dark);margin-bottom:16px}
+  .quiz-content p{color:var(--muted);font-size:16px;margin-bottom:32px;line-height:1.7}
+  .quiz-steps{display:flex;flex-direction:column;gap:14px}
+  .quiz-step{display:flex;align-items:center;gap:14px;background:#fff;border-radius:var(--r-lg);padding:14px 18px}
+  .quiz-step-num{width:32px;height:32px;background:var(--green-500);border-radius:var(--r-full);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .quiz-widget{background:#fff;border-radius:var(--r-xl);padding:32px;box-shadow:var(--shadow-lg)}
+  .quiz-q{font-size:18px;font-weight:600;color:var(--dark);margin-bottom:20px}
+  .quiz-options{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+  .quiz-opt{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--r-lg);border:1.5px solid var(--green-100);cursor:pointer;transition:all .2s}
+  .quiz-opt:hover{border-color:var(--green-400);background:var(--green-50)}
+  .quiz-opt.selected{border-color:var(--green-500);background:var(--green-50)}
+  .quiz-opt-icon{font-size:20px;width:36px;height:36px;background:var(--green-50);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .quiz-opt-label{font-size:14px;font-weight:600;color:var(--dark)}
+  .quiz-opt-desc{font-size:12px;color:var(--muted)}
+  .quiz-progress{height:4px;background:var(--green-100);border-radius:2px;margin-bottom:24px;overflow:hidden}
+  .quiz-progress-bar{height:100%;background:var(--green-500);border-radius:2px;transition:width .4s ease}
+  .quiz-nav{display:flex;justify-content:space-between;align-items:center}
+  .quiz-step-count{font-size:13px;color:var(--muted)}
+
+  /* PROGRESS BAR (doctor) */
+  .doctor-progress-wrap{height:6px;background:var(--green-100);border-radius:3px;overflow:hidden;margin-top:12px;display:none}
+  .doctor-progress-bar{height:100%;background:linear-gradient(90deg,var(--green-400),var(--green-500));border-radius:3px;width:0%;transition:width .2s}
+
+  /* RESPONSIVE */
+  @media(max-width:1024px){
+    .plant-grid{grid-template-columns:repeat(3,1fr)}
+    .features-strip{grid-template-columns:repeat(2,1fr)}
+    .care-grid{grid-template-columns:repeat(2,1fr)}
+    .footer-grid{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:768px){
+    .hero{grid-template-columns:1fr;min-height:auto}
+    .hero-content{padding:60px 24px}
+    .hero-visual{height:300px}
+    .nav{display:none}
+    .hamburger{display:flex}
+    .plant-grid{grid-template-columns:repeat(2,1fr);gap:16px}
+    .eco-inner,.quiz-inner,.doctor-inner{grid-template-columns:1fr}
+    .testimonial-grid{grid-template-columns:1fr}
+    .features-strip{grid-template-columns:1fr 1fr;margin:0;border-radius:0;padding:32px 24px}
+    .eco-section,.newsletter,.quiz-section,.doctor-section{margin:0;border-radius:0;padding:48px 24px}
+    .footer-grid{grid-template-columns:1fr}
+    .chat-panel{left:16px;right:16px;width:auto;bottom:88px}
+    .chat-fab{left:20px;bottom:20px}
+  }
+  @media(max-width:480px){
+    .plant-grid{grid-template-columns:1fr}
+    .care-grid{grid-template-columns:1fr}
+    .hero-cta{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <div class="mobile-menu-header">
+    <div class="logo"><div class="logo-icon">🌿</div>EcoPlant</div>
+    <button id="mobile-close" style="background:var(--green-50);border:none;border-radius:var(--r-full);width:36px;height:36px;font-size:18px;cursor:pointer">✕</button>
+  </div>
+  <a href="#plants">🌿 Shop Plants</a>
+  <a href="#care">💧 Plant Care</a>
+  <a href="#doctor">🔬 Plant Doctor</a>
+  <a href="#eco-impact">🌍 Eco Impact</a>
+  <div style="margin-top:16px"><button class="btn-primary" style="width:100%;padding:14px">Get Started →</button></div>
+</div>
+
+<!-- HEADER -->
+<header class="header" id="header">
+  <div class="header-inner">
+    <a href="/" class="logo"><div class="logo-icon">🌿</div>EcoPlant</a>
+    <nav class="nav">
+      <a href="#plants" class="active">Shop</a>
+      <a href="#care">Care Tips</a>
+      <a href="#doctor">Plant Doctor</a>
+      <a href="#eco-impact">Eco Impact</a>
+    </nav>
+    <div class="header-actions">
+      <button class="btn-icon" onclick="openSearch()" title="Search">🔍</button>
+      <button class="btn-icon" id="wishlist-btn" title="Wishlist">♡</button>
+      <button class="btn-icon" id="cart-btn" title="Cart" style="position:relative">
+        🛒<span class="cart-badge" id="cart-count" style="display:none">0</span>
+      </button>
+      <button class="btn-primary" onclick="document.getElementById('plants').scrollIntoView({behavior:'smooth'})">Shop Now</button>
+      <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge"><span class="hero-badge-dot"></span>🌿 India's #1 Online Plant Shop</div>
+    <h1>Bring <span>Nature</span> Into Your Home</h1>
+    <p class="hero-desc">Discover 40+ handpicked plants. Expert care guides, AI health diagnosis, and carbon-neutral delivery across India.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('plants').scrollIntoView({behavior:'smooth'})">Shop Plants →</button>
+      <button class="btn-secondary" onclick="document.getElementById('doctor').scrollIntoView({behavior:'smooth'})">🔬 Plant Doctor</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="hero-stat-num">40+</span><span class="hero-stat-label">Plant Varieties</span></div>
+      <div class="hero-stat"><span class="hero-stat-num">28k+</span><span class="hero-stat-label">Happy Customers</span></div>
+      <div class="hero-stat"><span class="hero-stat-num">4.9★</span><span class="hero-stat-label">App Rating</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-visual-grid">
+      <div class="hero-img"><img src="https://images.unsplash.com/photo-1545241047-6083a3684587?w=500&q=80" alt="Monstera"></div>
+      <div class="hero-img"><img src="https://images.unsplash.com/photo-1520412099551-62b6bafeb5bb?w=500&q=80" alt="Bird of Paradise"></div>
+      <div class="hero-img"><img src="https://images.unsplash.com/photo-1459156212016-c812468e2115?w=500&q=80" alt="Fiddle Leaf"></div>
+      <div class="hero-img"><img src="https://images.unsplash.com/photo-1604762525953-f3f0a7dbb4b4?w=500&q=80" alt="Areca Palm"></div>
+    </div>
+    <div class="hero-float-card">
+      <div class="float-icon">🌱</div>
+      <div><div class="float-card-title">AI Plant Doctor</div><div class="float-card-sub">Instant diagnosis</div></div>
+    </div>
+    <div class="hero-float-card2">
+      <div style="font-size:12px;font-weight:600;color:var(--dark)">⭐ 4.9/5</div>
+      <div style="font-size:11px;color:var(--muted)">28,000+ reviews</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track" id="marquee">
+    <div class="marquee-item"><span>🌿</span> Free shipping above ₹999</div>
+    <div class="marquee-item"><span>✨</span> 30-day plant guarantee</div>
+    <div class="marquee-item"><span>🤖</span> AI-powered plant care</div>
+    <div class="marquee-item"><span>🌍</span> Carbon neutral delivery</div>
+    <div class="marquee-item"><span>🪴</span> 40+ varieties in stock</div>
+    <div class="marquee-item"><span>💚</span> Expert botanists on call</div>
+    <div class="marquee-item"><span>📦</span> Delivered in 2–4 days</div>
+    <div class="marquee-item"><span>🌿</span> Free shipping above ₹999</div>
+    <div class="marquee-item"><span>✨</span> 30-day plant guarantee</div>
+    <div class="marquee-item"><span>🤖</span> AI-powered plant care</div>
+    <div class="marquee-item"><span>🌍</span> Carbon neutral delivery</div>
+    <div class="marquee-item"><span>🪴</span> 40+ varieties in stock</div>
+    <div class="marquee-item"><span>💚</span> Expert botanists on call</div>
+    <div class="marquee-item"><span>📦</span> Delivered in 2–4 days</div>
+  </div>
+</div>
+
+<!-- FEATURES STRIP -->
+<section style="padding:40px 0">
+  <div class="features-strip">
+    <div class="feature-item">
+      <div class="feature-icon">🚚</div>
+      <h3>Free Delivery</h3>
+      <p>On orders above ₹999. Across 500+ cities in India.</p>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🌡️</div>
+      <h3>Plant Guarantee</h3>
+      <p>30-day health guarantee. Dead on arrival? Full refund.</p>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🤖</div>
+      <h3>AI Plant Care</h3>
+      <p>Chat with EcoBot 24/7 for instant plant care guidance.</p>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🌍</div>
+      <h3>Eco Packaging</h3>
+      <p>100% biodegradable packaging. Carbon-neutral shipping.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PLANTS -->
+<section class="section" id="plants">
+  <div class="section-center">
+    <div class="section-header">
+      <div class="section-header-left">
+        <h2>Our Plant Collection</h2>
+        <p>Handpicked from the best nurseries across India</p>
+      </div>
+      <span id="plant-count" style="color:var(--muted);font-size:14px"></span>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-chips">
+        <button class="filter-chip active" data-filter="all">All Plants</button>
+        <button class="filter-chip" data-filter="air">✨ Air Purifying</button>
+        <button class="filter-chip" data-filter="pet">🐾 Pet Safe</button>
+        <button class="filter-chip" data-filter="low">🌱 Low Maintenance</button>
+        <button class="filter-chip" data-filter="beginner">👋 Beginner</button>
+        <button class="filter-chip" data-filter="succulent">🌵 Succulents</button>
+        <button class="filter-chip" data-filter="tropical">🌴 Tropical</button>
+        <button class="filter-chip" data-filter="flowering">🌸 Flowering</button>
+      </div>
+      <select class="sort-select" id="sort-select">
+        <option value="featured">Featured</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="name">Name A–Z</option>
+        <option value="co2">CO₂ Impact</option>
+      </select>
+    </div>
+
+    <div class="plant-grid" id="plant-grid">
+      <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">
+        <div style="font-size:32px;margin-bottom:12px">🌿</div>
+        Loading plants...
+      </div>
+    </div>
+    <div class="load-more-wrap">
+      <button class="load-more-btn" id="load-more-btn" style="display:none" onclick="loadMore()">Load More Plants 🌱</button>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section class="quiz-section" id="quiz">
+  <div class="quiz-inner">
+    <div class="quiz-content">
+      <h2>Find Your Perfect Plant Match</h2>
+      <p>Answer 4 quick questions and our AI will recommend the ideal plants for your space and lifestyle.</p>
+      <div class="quiz-steps">
+        <div class="quiz-step"><div class="quiz-step-num">1</div><span style="font-size:14px;font-weight:500">Tell us about your space</span></div>
+        <div class="quiz-step"><div class="quiz-step-num">2</div><span style="font-size:14px;font-weight:500">Your lifestyle & experience</span></div>
+        <div class="quiz-step"><div class="quiz-step-num">3</div><span style="font-size:14px;font-weight:500">Sunlight availability</span></div>
+        <div class="quiz-step"><div class="quiz-step-num">4</div><span style="font-size:14px;font-weight:500">Get AI recommendations</span></div>
+      </div>
+    </div>
+    <div class="quiz-widget">
+      <div class="quiz-progress"><div class="quiz-progress-bar" id="quiz-progress-bar" style="width:25%"></div></div>
+      <div id="quiz-content"></div>
+      <div class="quiz-nav">
+        <button id="quiz-prev" class="btn-secondary" style="display:none" onclick="quizPrev()">← Back</button>
+        <span class="quiz-step-count" id="quiz-step-count">Step 1 of 4</span>
+        <button id="quiz-next" class="btn-primary" onclick="quizNext()">Next →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CARE TIPS -->
+<section class="section" id="care">
+  <div class="section-center">
+    <div class="section-header">
+      <div class="section-header-left">
+        <h2>Plant Care Essentials</h2>
+        <p>Science-backed tips to keep your plants thriving</p>
+      </div>
+    </div>
+    <div class="care-grid">
+      <div class="care-card fade-up"><div class="care-icon" style="background:var(--green-50)">💧</div><h3>Watering Wisdom</h3><p>Most plants prefer to dry out slightly between waterings. Stick your finger 2 inches into soil — if dry, it's time.</p></div>
+      <div class="care-card fade-up" style="transition-delay:.1s"><div class="care-icon" style="background:#fef3c7">☀️</div><h3>Light Requirements</h3><p>North = low light. East/West = medium. South = bright direct light. Match your plant to your window.</p></div>
+      <div class="care-card fade-up" style="transition-delay:.2s"><div class="care-icon" style="background:var(--earth-100)">🌡️</div><h3>Temperature & Humidity</h3><p>Most tropicals thrive at 18–27°C. Boost humidity by grouping plants or using a pebble tray.</p></div>
+      <div class="care-card fade-up" style="transition-delay:.3s"><div class="care-icon" style="background:#f0fdf4">🌱</div><h3>Fertilizing Schedule</h3><p>Feed plants monthly during spring/summer with balanced liquid fertilizer. Pause in fall and winter.</p></div>
+      <div class="care-card fade-up" style="transition-delay:.1s"><div class="care-icon" style="background:#fef2f2">🪲</div><h3>Pest Prevention</h3><p>Inspect leaves weekly. Neem oil spray is an effective organic solution for most common pests.</p></div>
+      <div class="care-card fade-up" style="transition-delay:.2s"><div class="care-icon" style="background:#f0f9ff">🪴</div><h3>Repotting Guide</h3><p>Repot when roots peek from drainage holes. Go up 1–2 pot sizes in spring for best results.</p></div>
+      <div class="care-card fade-up" style="transition-delay:.3s"><div class="care-icon" style="background:#f5f3ff">✂️</div><h3>Pruning & Shaping</h3><p>Remove dead leaves promptly. Cut just above a leaf node at 45° for bushier growth.</p></div>
+      <div class="care-card fade-up" style="transition-delay:.4s"><div class="care-icon" style="background:var(--sage-50)">🧪</div><h3>Soil Selection</h3><p>Cacti need sandy mix; tropicals love rich, chunky aroid mix. Match soil to your plant type.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ECO IMPACT -->
+<section class="eco-section" id="eco-impact">
+  <div class="eco-bg"></div>
+  <div class="eco-inner">
+    <div>
+      <div class="eco-label"><span>🌍</span>Eco Impact Tracker</div>
+      <h2 style="color:#fff;font-size:clamp(28px,3vw,42px);margin-bottom:16px">Together, We're Making a Difference</h2>
+      <p style="color:rgba(255,255,255,.65);font-size:16px;line-height:1.7;margin-bottom:36px">Every plant purchase contributes to a greener planet. Our community has already made a significant impact.</p>
+      <div class="eco-stats">
+        <div class="eco-stat-card"><div class="eco-stat-num" id="counter-co2">12,450kg</div><div class="eco-stat-label">CO₂ Absorbed Annually</div></div>
+        <div class="eco-stat-card"><div class="eco-stat-num">1,840</div><div class="eco-stat-label">Trees Equivalent</div></div>
+        <div class="eco-stat-card"><div class="eco-stat-num" id="counter-customers">28k+</div><div class="eco-stat-label">Happy Plant Parents</div></div>
+        <div class="eco-stat-card"><div class="eco-stat-num" id="counter-plants">45k+</div><div class="eco-stat-label">Plants Shipped</div></div>
+      </div>
+      <div class="eco-tree-anim" id="eco-bars"></div>
+    </div>
+    <div class="eco-visual">
+      <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=600&q=80" alt="Plant collection">
+    </div>
+  </div>
+</section>
+
+<!-- PLANT DOCTOR -->
+<section class="doctor-section" id="doctor">
+  <div class="doctor-inner">
+    <div>
+      <div class="eco-label" style="background:rgba(45,138,71,.1);border-color:var(--green-200);color:var(--green-600)"><span>🔬</span>AI Plant Doctor</div>
+      <h2 style="font-size:clamp(28px,3vw,40px);color:var(--dark);margin-bottom:16px">Diagnose Your Plant Instantly</h2>
+      <p style="color:var(--muted);font-size:16px;line-height:1.7;margin-bottom:28px">Upload a photo of your plant and our AI will identify the species, assess its health, diagnose any issues, and provide personalised treatment recommendations.</p>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:var(--r-lg);padding:14px 18px"><div style="width:32px;height:32px;background:var(--green-100);border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;font-size:14px">🪴</div><span style="font-size:14px;font-weight:500">Identifies 500+ plant species</span></div>
+        <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:var(--r-lg);padding:14px 18px"><div style="width:32px;height:32px;background:var(--green-100);border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;font-size:14px">🦠</div><span style="font-size:14px;font-weight:500">Detects 50+ diseases & pest infestations</span></div>
+        <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:var(--r-lg);padding:14px 18px"><div style="width:32px;height:32px;background:var(--green-100);border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;font-size:14px">💊</div><span style="font-size:14px;font-weight:500">Personalised treatment plan</span></div>
+      </div>
+    </div>
+    <div class="doctor-demo">
+      <div id="doctor-upload" class="doctor-upload" onclick="triggerUpload()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+        <div class="doctor-upload-icon" id="doctor-upload-icon">📷</div>
+        <div id="doctor-upload-text"><p><strong>Click to upload</strong> or drag & drop</p><p style="font-size:12px;margin-top:4px">JPG, PNG, WEBP — up to 10MB</p></div>
+      </div>
+      <input type="file" id="plant-file-input" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
+      <div class="doctor-progress-wrap" id="doctor-loading">
+        <div class="doctor-progress-bar" id="doctor-progress"></div>
+      </div>
+      <div id="doctor-analyzing" style="display:none;text-align:center;padding:16px;color:var(--muted);font-size:14px">
+        <div style="font-size:24px;margin-bottom:8px;animation:pulse 1s infinite">🤖</div>
+        Analysing your plant with AI...
+      </div>
+      <div class="doctor-result" id="doctor-result">
+        <div class="health-indicator">
+          <div class="health-dot" id="health-dot"></div>
+          <span style="font-size:14px;font-weight:600;color:var(--dark)" id="health-status">Healthy</span>
+          <span style="margin-left:auto;font-size:13px;background:var(--green-100);color:var(--green-700);padding:2px 10px;border-radius:var(--r-full)" id="health-score">85% Health</span>
+        </div>
+        <div style="font-size:15px;font-weight:600;color:var(--dark);margin-bottom:4px" id="plant-identified">Monstera Deliciosa</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px" id="plant-confidence"></div>
+        <div style="font-size:13px;color:var(--text);margin-bottom:12px;line-height:1.6" id="health-diagnosis"></div>
+        <div id="health-issues-wrap" style="display:none;margin-bottom:12px">
+          <div style="font-size:12px;font-weight:600;color:var(--dark);margin-bottom:6px">⚠️ Issues Detected</div>
+          <ul id="health-issues" style="font-size:12px;color:var(--muted);padding-left:16px;line-height:1.8"></ul>
+        </div>
+        <div style="background:#fff;border-radius:var(--r-md);padding:14px;border:1px solid var(--green-100)">
+          <div style="font-size:12px;font-weight:600;color:var(--dark);margin-bottom:8px">💊 Recommended Treatment</div>
+          <ul id="health-treatments" style="font-size:12px;color:var(--muted);padding-left:16px;line-height:1.8"></ul>
+        </div>
+        <button onclick="resetDoctor()" style="margin-top:14px;width:100%;background:transparent;border:1.5px solid var(--green-200);border-radius:var(--r-full);padding:10px;font-size:13px;font-weight:600;color:var(--green-600);cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s">Analyse Another Plant →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+  <div class="section-center">
+    <div class="section-header">
+      <div class="section-header-left"><h2>What Our Plant Parents Say</h2><p>Real stories from 28,000+ happy customers</p></div>
+    </div>
+    <div class="testimonial-grid">
+      <div class="testimonial-card fade-up">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"The AI plant doctor diagnosed my Monstera perfectly — overwatering! Fixed it in a week. The chat assistant is incredibly helpful."</p>
+        <div style="display:flex;align-items:center;gap:12px"><div class="author-avatar">🌸</div><div><div class="author-name">Priya Sharma</div><div class="author-role">Mumbai, Plant Enthusiast</div></div></div>
+      </div>
+      <div class="testimonial-card fade-up" style="transition-delay:.1s">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"Ordered 6 plants and all arrived in perfect condition. EcoBot helped me pick the perfect plants for my north-facing flat!"</p>
+        <div style="display:flex;align-items:center;gap:12px"><div class="author-avatar">🌿</div><div><div class="author-name">Rahul Mehta</div><div class="author-role">Bangalore, Interior Designer</div></div></div>
+      </div>
+      <div class="testimonial-card fade-up" style="transition-delay:.2s">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"The quiz recommended a Snake Plant and ZZ Plant for my shaded office. Both are thriving 6 months later — zero effort!"</p>
+        <div style="display:flex;align-items:center;gap:12px"><div class="author-avatar">🪴</div><div><div class="author-name">Ananya Iyer</div><div class="author-role">Chennai, Software Engineer</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<div class="newsletter" style="margin:0 24px 80px">
+  <div class="newsletter-bg"><div></div><div></div><div></div></div>
+  <div style="position:relative">
+    <div style="font-size:32px;margin-bottom:12px">🌿</div>
+    <h2>Get Plant Care Tips & Exclusive Offers</h2>
+    <p>Join 28,000+ plant lovers. Weekly care tips, seasonal guides, and member-only discounts.</p>
+    <div class="newsletter-form">
+      <input class="newsletter-input" type="email" placeholder="Enter your email address" id="newsletter-email">
+      <button class="newsletter-btn" onclick="subscribeNewsletter()">Subscribe</button>
+    </div>
+    <p style="color:rgba(255,255,255,.6);font-size:12px;margin-top:12px">No spam, unsubscribe anytime. 🌱</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo" style="color:var(--green-400);margin-bottom:12px"><div class="logo-icon" style="background:var(--green-700)">🌿</div>EcoPlant</div>
+        <p>Bringing nature into your home while making a positive impact on our planet.</p>
+        <div class="footer-socials">
+          <button class="social-btn">📘</button><button class="social-btn">📸</button><button class="social-btn">🐦</button><button class="social-btn">▶️</button>
+        </div>
+      </div>
+      <div class="footer-col"><h4>Shop</h4><ul><li><a href="#">All Plants</a></li><li><a href="#">Air Purifying</a></li><li><a href="#">Pet Friendly</a></li><li><a href="#">Succulents & Cacti</a></li><li><a href="#">Herbs & Edibles</a></li></ul></div>
+      <div class="footer-col"><h4>Learn</h4><ul><li><a href="#">Plant Care Blog</a></li><li><a href="#">Care Guides</a></li><li><a href="#">Plant Doctor</a></li><li><a href="#">Plant Quiz</a></li><li><a href="#">Community</a></li></ul></div>
+      <div class="footer-col"><h4>Support</h4><ul><li><a href="#">Track Order</a></li><li><a href="#">Shipping Info</a></li><li><a href="#">Returns</a></li><li><a href="#">Contact Us</a></li><li><a href="#">FAQ</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 EcoPlant. Made with 💚 for a greener planet.</span>
+      <div class="footer-badges">
+        <span class="footer-badge">🔒 Secure Checkout</span>
+        <span class="footer-badge">🌱 Carbon Neutral</span>
+        <span class="footer-badge">♻️ Eco Packaging</span>
+        <span class="footer-badge">🇮🇳 Made in India</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header">
+    <div class="cart-title">🛒 Your Cart</div>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-body" id="cart-body">
+    <div class="cart-empty"><div style="font-size:48px;margin-bottom:16px">🌿</div><div style="font-size:16px;font-weight:600;color:var(--dark);margin-bottom:8px">Your cart is empty</div><div style="font-size:14px;color:var(--muted)">Add some plants to get started!</div></div>
+  </div>
+  <div class="cart-footer" id="cart-footer" style="display:none">
+    <div class="cart-total-row"><span>Subtotal</span><span id="cart-subtotal">₹0</span></div>
+    <div class="cart-total-row"><span>Shipping</span><span id="cart-shipping">FREE</span></div>
+    <div class="cart-total-main"><span>Total</span><span id="cart-total">₹0</span></div>
+    <button class="checkout-btn" onclick="checkout()">Proceed to Checkout →</button>
+    <p class="cart-co2-note">🌱 Your order will save <strong id="cart-co2-total">0kg</strong> of CO₂ annually</p>
+  </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div class="search-modal" id="search-modal" onclick="closeSearch(event)">
+  <div class="search-box" onclick="event.stopPropagation()">
+    <div class="search-input-wrap">
+      <span>🔍</span>
+      <input class="search-input" type="text" placeholder="Search plants, care tips, guides..." id="search-input" oninput="handleSearch(this.value)">
+      <button onclick="closeSearch()" style="background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer">✕</button>
+    </div>
+    <div id="search-results">
+      <div style="padding:16px 20px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Popular Searches</div>
+      <div class="search-result-item" onclick="filterPlants('air');closeSearch()"><div style="width:48px;height:48px;background:var(--green-50);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:22px">✨</div><div><div class="search-result-name">Air Purifying Plants</div><div style="font-size:12px;color:var(--muted)">16 plants</div></div></div>
+      <div class="search-result-item" onclick="filterPlants('low');closeSearch()"><div style="width:48px;height:48px;background:var(--green-50);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:22px">🌱</div><div><div class="search-result-name">Easy Care Plants</div><div style="font-size:12px;color:var(--muted)">Beginner-friendly</div></div></div>
+      <div class="search-result-item" onclick="filterPlants('pet');closeSearch()"><div style="width:48px;height:48px;background:var(--green-50);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:22px">🐾</div><div><div class="search-result-name">Pet-Safe Plants</div><div style="font-size:12px;color:var(--muted)">Safe for cats & dogs</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- AI CHATBOX -->
+<button class="chat-fab" id="chat-fab" onclick="toggleChat()" title="Chat with EcoBot">
+  🤖
+  <span class="chat-fab-badge" id="chat-badge">1</span>
+</button>
+
+<div class="chat-panel" id="chat-panel">
+  <div class="chat-panel-header">
+    <div class="chat-avatar">🌿</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">EcoBot AI Assistant</div>
+      <div class="chat-header-status"><span class="chat-status-dot"></span>Online — replies instantly</div>
+    </div>
+    <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    <div class="chat-message bot">
+      <div class="chat-msg-avatar">🌿</div>
+      <div class="chat-msg-bubble">Hi! I'm EcoBot 🌱 Your personal plant care assistant. I can help you choose plants, diagnose issues, and give care advice. What can I help with today?</div>
+    </div>
+  </div>
+  <div class="chat-quick-replies" id="quick-replies">
+    <button class="quick-reply" onclick="sendQuickReply('Which plants are good for low light?')">Low light plants 🌑</button>
+    <button class="quick-reply" onclick="sendQuickReply('My plant leaves are turning yellow. What\'s wrong?')">Yellow leaves 🍂</button>
+    <button class="quick-reply" onclick="sendQuickReply('What are the best pet-safe plants?')">Pet safe plants 🐾</button>
+    <button class="quick-reply" onclick="sendQuickReply('How often should I water my plants?')">Watering tips 💧</button>
+  </div>
+  <div class="chat-input-area">
+    <input class="chat-input" type="text" placeholder="Ask me anything about plants..." id="chat-input" onkeydown="if(event.key==='Enter')sendMessage()">
+    <button class="chat-send-btn" id="chat-send" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let cart = JSON.parse(localStorage.getItem('ecoplant_cart') || '[]');
+let savedPlants = JSON.parse(localStorage.getItem('ecoplant_saved') || '[]');
+let displayedCount = 12;
+let activeFilter = 'all';
+let activeSortBy = 'featured';
+let allPlants = [];
+let chatHistory = [];
+const API_BASE = ''; // empty = same origin; set to 'http://localhost:3000' for dev
+
+// ── LOAD PLANTS FROM API (or fallback) ──
+async function fetchPlants() {
+  try {
+    const res = await fetch(`${API_BASE}/api/plants?limit=100`);
+    const data = await res.json();
+    allPlants = data.plants || [];
+  } catch {
+    // Fallback local data
+    allPlants = [
+      {id:1,name:'Monstera Deliciosa',sci:'Monstera deliciosa',price:899,oldPrice:1199,img:'https://images.unsplash.com/photo-1545241047-6083a3684587?w=400&q=80',co2:2.1,tags:['air','beginner','tropical'],maintenance:'low',sunlight:'medium',water:'weekly',airPurifying:true,petFriendly:false,isNew:false,isSale:true},
+      {id:2,name:'Snake Plant',sci:'Sansevieria trifasciata',price:549,img:'https://images.unsplash.com/photo-1572688484438-313a6e50c333?w=400&q=80',co2:1.8,tags:['air','beginner','low'],maintenance:'low',sunlight:'low',water:'2 weeks',airPurifying:true,petFriendly:false,isNew:false,isSale:false},
+      {id:3,name:'Peace Lily',sci:'Spathiphyllum wallisii',price:699,img:'https://images.unsplash.com/photo-1593691509543-c55fb32d8de5?w=400&q=80',co2:1.5,tags:['air','flowering'],maintenance:'medium',sunlight:'low',water:'weekly',airPurifying:true,petFriendly:false,isNew:true,isSale:false},
+      {id:4,name:'Pothos',sci:'Epipremnum aureum',price:399,img:'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&q=80',co2:1.2,tags:['beginner','low'],maintenance:'low',sunlight:'low',water:'weekly',airPurifying:true,petFriendly:false,isNew:false,isSale:false},
+      {id:5,name:'Spider Plant',sci:'Chlorophytum comosum',price:449,img:'https://images.unsplash.com/photo-1596302736603-66c3ed5dc059?w=400&q=80',co2:1.6,tags:['air','pet','beginner'],maintenance:'low',sunlight:'medium',water:'weekly',airPurifying:true,petFriendly:true,isNew:false,isSale:false},
+      {id:6,name:'Fiddle Leaf Fig',sci:'Ficus lyrata',price:1499,img:'https://images.unsplash.com/photo-1459156212016-c812468e2115?w=400&q=80',co2:2.8,tags:['tropical'],maintenance:'high',sunlight:'high',water:'weekly',airPurifying:false,petFriendly:false,isNew:false,isSale:false},
+      {id:7,name:'ZZ Plant',sci:'Zamioculcas zamiifolia',price:649,img:'https://images.unsplash.com/photo-1632207691143-643e2a9a9361?w=400&q=80',co2:1.4,tags:['beginner','low'],maintenance:'low',sunlight:'low',water:'2 weeks',airPurifying:false,petFriendly:false,isNew:true,isSale:false},
+      {id:8,name:'Boston Fern',sci:'Nephrolepis exaltata',price:599,img:'https://images.unsplash.com/photo-1466082395-2459a7f3d41c?w=400&q=80',co2:2.0,tags:['air','pet'],maintenance:'medium',sunlight:'medium',water:'twice weekly',airPurifying:true,petFriendly:true,isNew:false,isSale:true},
+      {id:9,name:'Rubber Plant',sci:'Ficus elastica',price:799,oldPrice:999,img:'https://images.unsplash.com/photo-1585336261022-680e295ce3fe?w=400&q=80',co2:2.4,tags:['air','tropical'],maintenance:'medium',sunlight:'medium',water:'weekly',airPurifying:true,petFriendly:false,isNew:false,isSale:true},
+      {id:10,name:'Aloe Vera',sci:'Aloe barbadensis',price:349,img:'https://images.unsplash.com/photo-1596729040015-40b61f0c4c5f?w=400&q=80',co2:0.9,tags:['beginner','low','succulent'],maintenance:'low',sunlight:'high',water:'3 weeks',airPurifying:false,petFriendly:true,isNew:false,isSale:false},
+      {id:11,name:'Bamboo Palm',sci:'Chamaedorea seifrizii',price:1199,img:'https://images.unsplash.com/photo-1598880940080-ff9a29891b85?w=400&q=80',co2:3.1,tags:['air','pet','tropical'],maintenance:'medium',sunlight:'medium',water:'twice weekly',airPurifying:true,petFriendly:true,isNew:true,isSale:false},
+      {id:12,name:'Bird of Paradise',sci:'Strelitzia reginae',price:1899,img:'https://images.unsplash.com/photo-1520412099551-62b6bafeb5bb?w=400&q=80',co2:3.5,tags:['tropical','flowering'],maintenance:'medium',sunlight:'high',water:'weekly',airPurifying:false,petFriendly:false,isNew:true,isSale:false},
+      {id:13,name:'String of Pearls',sci:'Senecio rowleyanus',price:499,img:'https://images.unsplash.com/photo-1567748157439-651aca2ff064?w=400&q=80',co2:0.7,tags:['succulent','low'],maintenance:'low',sunlight:'high',water:'3 weeks',airPurifying:false,petFriendly:false,isNew:true,isSale:false},
+      {id:14,name:'Areca Palm',sci:'Dypsis lutescens',price:1399,img:'https://images.unsplash.com/photo-1604762525953-f3f0a7dbb4b4?w=400&q=80',co2:3.4,tags:['air','pet','tropical'],maintenance:'medium',sunlight:'medium',water:'twice weekly',airPurifying:true,petFriendly:true,isNew:false,isSale:false},
+      {id:15,name:'Calathea',sci:'Calathea orbifolia',price:849,img:'https://images.unsplash.com/photo-1566281796517-1f552efea43d?w=400&q=80',co2:1.6,tags:['tropical','pet'],maintenance:'high',sunlight:'low',water:'weekly',airPurifying:false,petFriendly:true,isNew:false,isSale:false},
+      {id:16,name:'Orchid',sci:'Phalaenopsis amabilis',price:649,img:'https://images.unsplash.com/photo-1490750967868-88df5691b40a?w=400&q=80',co2:0.8,tags:['flowering','pet'],maintenance:'medium',sunlight:'medium',water:'weekly',airPurifying:false,petFriendly:true,isNew:false,isSale:false},
+    ];
+  }
+  renderPlants();
+}
+
+// ── RENDER PLANTS ──
+function renderPlants() {
+  const grid = document.getElementById('plant-grid');
+  let filtered = allPlants.filter(p => {
+    if (activeFilter === 'air') return p.airPurifying;
+    if (activeFilter === 'pet') return p.petFriendly;
+    if (activeFilter === 'low') return p.maintenance === 'low';
+    if (activeFilter === 'beginner') return p.tags.includes('beginner');
+    if (activeFilter === 'succulent') return p.tags.includes('succulent');
+    if (activeFilter === 'tropical') return p.tags.includes('tropical');
+    if (activeFilter === 'flowering') return p.tags.includes('flowering');
+    return true;
+  });
+  if (activeSortBy === 'price-asc') filtered.sort((a,b)=>a.price-b.price);
+  else if (activeSortBy === 'price-desc') filtered.sort((a,b)=>b.price-a.price);
+  else if (activeSortBy === 'name') filtered.sort((a,b)=>a.name.localeCompare(b.name));
+  else if (activeSortBy === 'co2') filtered.sort((a,b)=>b.co2-a.co2);
+
+  const shown = filtered.slice(0, displayedCount);
+  document.getElementById('load-more-btn').style.display = filtered.length > displayedCount ? 'inline-flex' : 'none';
+  document.getElementById('plant-count').textContent = `${filtered.length} plants`;
+
+  if (shown.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">🌵</div><div style="font-size:18px;font-weight:600;margin-bottom:8px">No plants found</div><p style="font-size:14px">Try a different filter</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = shown.map(p => {
+    const isSaved = savedPlants.includes(p.id);
+    const careClass = p.maintenance === 'low' ? 'badge-low-care' : p.maintenance === 'medium' ? 'badge-med-care' : 'badge-high-care';
+    return `
+    <div class="plant-card">
+      <div class="plant-card-img">
+        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80'">
+        <div class="plant-card-badges">
+          ${p.airPurifying ? '<span class="badge badge-green">✨ Air Purifying</span>' : ''}
+          ${p.petFriendly ? '<span class="badge badge-sage">🐾 Pet Safe</span>' : ''}
+          ${p.isNew ? '<span class="badge badge-new">New</span>' : ''}
+          ${p.isSale ? '<span class="badge badge-sale">Sale</span>' : ''}
+        </div>
+        <button class="plant-card-save ${isSaved?'saved':''}" onclick="toggleSave(${p.id},event)">${isSaved?'❤️':'🤍'}</button>
+        <div class="plant-co2">-${p.co2}kg CO₂/yr</div>
+      </div>
+      <div class="plant-card-body">
+        <div class="plant-name">${p.name}</div>
+        <div class="plant-sci">${p.sci}</div>
+        <div class="plant-meta">
+          <span class="badge badge-care ${careClass}">${p.maintenance} care</span>
+          <span class="badge badge-care" style="background:var(--green-50);color:var(--green-700);border:1px solid var(--green-200)">💧 ${p.water}</span>
+        </div>
+        <div class="plant-price-row">
+          <div>
+            <span class="plant-price">₹${p.price.toLocaleString()}</span>
+            ${p.oldPrice ? `<span class="plant-price-old">₹${p.oldPrice.toLocaleString()}</span>` : ''}
+          </div>
+          <button class="add-cart-btn" onclick="addToCart(${p.id},event)">🛒</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadMore() { displayedCount += 8; renderPlants(); }
+
+function filterPlants(filter) {
+  activeFilter = filter;
+  displayedCount = 12;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === filter));
+  renderPlants();
+}
+
+document.querySelectorAll('.filter-chip').forEach(c => c.addEventListener('click', () => filterPlants(c.dataset.filter)));
+document.getElementById('sort-select').addEventListener('change', function(){ activeSortBy = this.value; renderPlants(); });
+
+// ── CART ──
+function addToCart(id, e) {
+  if(e){e.stopPropagation();e.preventDefault();}
+  const plant = allPlants.find(p=>p.id===id);
+  if (!plant) return;
+  const existing = cart.find(i=>i.id===id);
+  if(existing) existing.qty++;
+  else cart.push({...plant, qty:1});
+  saveCart(); updateCartUI();
+  showToast('🌱', `${plant.name} added!`, `-${plant.co2}kg CO₂/year`);
+}
+function removeFromCart(id){ cart=cart.filter(i=>i.id!==id); saveCart(); updateCartUI(); renderCartBody(); }
+function updateQty(id,delta){ const item=cart.find(i=>i.id===id); if(item){item.qty=Math.max(1,item.qty+delta);saveCart();updateCartUI();renderCartBody();} }
+function saveCart(){ localStorage.setItem('ecoplant_cart',JSON.stringify(cart)); }
+function updateCartUI(){
+  const total=cart.reduce((s,i)=>s+i.qty,0);
+  const badge=document.getElementById('cart-count');
+  badge.style.display=total>0?'flex':'none'; badge.textContent=total;
+}
+function renderCartBody(){
+  const body=document.getElementById('cart-body'), footer=document.getElementById('cart-footer');
+  if(cart.length===0){ body.innerHTML=`<div class="cart-empty"><div style="font-size:48px;margin-bottom:16px">🌿</div><div style="font-size:16px;font-weight:600;color:var(--dark);margin-bottom:8px">Your cart is empty</div><div style="font-size:14px;color:var(--muted)">Add some plants to get started!</div></div>`; footer.style.display='none'; return; }
+  body.innerHTML=cart.map(item=>`
+    <div class="cart-item">
+      <div class="cart-item-img"><img src="${item.img}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=100&q=80'"></div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">₹${(item.price*item.qty).toLocaleString()}</div>
+        <div class="cart-item-qty">
+          <button class="qty-btn" onclick="updateQty(${item.id},-1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="updateQty(${item.id},1)">+</button>
+          <button class="cart-remove" onclick="removeFromCart(${item.id})">🗑</button>
+        </div>
+      </div>
+    </div>`).join('');
+  const subtotal=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const co2=cart.reduce((s,i)=>s+i.co2*i.qty,0).toFixed(1);
+  document.getElementById('cart-subtotal').textContent=`₹${subtotal.toLocaleString()}`;
+  document.getElementById('cart-shipping').textContent=subtotal>=999?'FREE 🎉':'₹99';
+  document.getElementById('cart-total').textContent=`₹${(subtotal>=999?subtotal:subtotal+99).toLocaleString()}`;
+  document.getElementById('cart-co2-total').textContent=`${co2}kg`;
+  footer.style.display='block';
+}
+function openCart(){ document.getElementById('cart-overlay').classList.add('open'); document.getElementById('cart-drawer').classList.add('open'); renderCartBody(); document.body.style.overflow='hidden'; }
+function closeCart(){ document.getElementById('cart-overlay').classList.remove('open'); document.getElementById('cart-drawer').classList.remove('open'); document.body.style.overflow=''; }
+function checkout(){ showToast('🛒','Checkout','Redirecting to secure checkout...'); setTimeout(()=>closeCart(),1500); }
+document.getElementById('cart-btn').addEventListener('click', openCart);
+
+// ── WISHLIST ──
+function toggleSave(id,e){
+  if(e){e.stopPropagation();e.preventDefault();}
+  const idx=savedPlants.indexOf(id);
+  const plant=allPlants.find(p=>p.id===id);
+  if(idx>=0){ savedPlants.splice(idx,1); showToast('💔','Removed from wishlist',plant?.name||''); }
+  else { savedPlants.push(id); showToast('❤️','Added to wishlist!',plant?.name||''); }
+  localStorage.setItem('ecoplant_saved',JSON.stringify(savedPlants));
+  renderPlants();
+  document.getElementById('wishlist-btn').textContent=savedPlants.length>0?'❤️':'♡';
+}
+
+// ── SEARCH ──
+function openSearch(){ document.getElementById('search-modal').classList.add('open'); setTimeout(()=>document.getElementById('search-input').focus(),100); }
+function closeSearch(e){ if(!e||e.target===document.getElementById('search-modal')) document.getElementById('search-modal').classList.remove('open'); }
+function handleSearch(q){
+  const res=document.getElementById('search-results');
+  if(!q){res.innerHTML=`<div style="padding:16px 20px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Popular Searches</div>
+    <div class="search-result-item" onclick="filterPlants('air');closeSearch()"><div style="width:48px;height:48px;background:var(--green-50);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:22px">✨</div><div><div class="search-result-name">Air Purifying Plants</div></div></div>`;return;}
+  const found=allPlants.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.sci.toLowerCase().includes(q.toLowerCase())).slice(0,6);
+  if(!found.length){res.innerHTML=`<div style="padding:24px;text-align:center;color:var(--muted);font-size:14px">No plants found for "${q}"</div>`;return;}
+  res.innerHTML=found.map(p=>`<div class="search-result-item" onclick="filterPlants('all');closeSearch();"><img src="${p.img}" style="width:48px;height:48px;border-radius:var(--r-md);object-fit:cover"><div><div class="search-result-name">${p.name}</div><div style="font-size:12px;color:var(--muted)">₹${p.price.toLocaleString()}</div></div></div>`).join('');
+}
+
+// ── TOAST ──
+function showToast(icon,msg,sub=''){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div'); t.className='toast';
+  t.innerHTML=`<span class="toast-icon">${icon}</span><div><div class="toast-msg">${msg}</div>${sub?`<div class="toast-sub">${sub}</div>`:''}</div>`;
+  c.appendChild(t); setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},3500);
+}
+
+// ── NEWSLETTER ──
+async function subscribeNewsletter(){
+  const email=document.getElementById('newsletter-email').value;
+  if(!email||!email.includes('@')){ showToast('⚠️','Valid email required'); return; }
+  try{
+    await fetch(`${API_BASE}/api/newsletter`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+  } catch(e){}
+  showToast('🌱','Subscribed!','Welcome to the EcoPlant family 💚');
+  document.getElementById('newsletter-email').value='';
+}
+
+// ── QUIZ ──
+const quizQuestions=[
+  {q:'What kind of space do you have?',opts:[{icon:'🏢',label:'Small Apartment',desc:'Under 500 sq ft'},{icon:'🏠',label:'Medium Home',desc:'500–1000 sq ft'},{icon:'🏡',label:'Large House',desc:'With garden/balcony'},{icon:'🏢',label:'Office/Workspace',desc:'Professional setting'}]},
+  {q:'How experienced are you with plants?',opts:[{icon:'👋',label:'Complete Beginner',desc:'First plant ever'},{icon:'🌱',label:'Casual Grower',desc:'Had a few plants'},{icon:'🌿',label:'Experienced',desc:'Love plant care'},{icon:'🌳',label:'Plant Expert',desc:'Propagation & more'}]},
+  {q:'How much natural light do you get?',opts:[{icon:'☁️',label:'Very Low',desc:'North-facing, shaded'},{icon:'🌤️',label:'Moderate',desc:'East or west facing'},{icon:'☀️',label:'Bright Indirect',desc:'Near large windows'},{icon:'🌞',label:'Full Sun',desc:'South-facing, sunny'}]},
+  {q:'How often will you remember to water?',opts:[{icon:'🦥',label:'Rarely',desc:'Monthly or less'},{icon:'📅',label:'Occasionally',desc:'Every 2 weeks'},{icon:'💧',label:'Regularly',desc:'Weekly'},{icon:'🚿',label:'Enthusiastically',desc:'Multiple times a week'}]},
+];
+let quizStep=0, quizAnswers=[];
+function renderQuiz(){
+  const q=quizQuestions[quizStep];
+  document.getElementById('quiz-content').innerHTML=`<div class="quiz-q">${q.q}</div><div class="quiz-options">${q.opts.map((o,i)=>`<div class="quiz-opt ${quizAnswers[quizStep]===i?'selected':''}" onclick="selectQuizOpt(${i})"><div class="quiz-opt-icon">${o.icon}</div><div><div class="quiz-opt-label">${o.label}</div><div class="quiz-opt-desc">${o.desc}</div></div></div>`).join('')}</div>`;
+  document.getElementById('quiz-progress-bar').style.width=`${((quizStep+1)/quizQuestions.length)*100}%`;
+  document.getElementById('quiz-step-count').textContent=`Step ${quizStep+1} of ${quizQuestions.length}`;
+  document.getElementById('quiz-prev').style.display=quizStep>0?'block':'none';
+  document.getElementById('quiz-next').textContent=quizStep===quizQuestions.length-1?'Get My Plants 🌿':'Next →';
+}
+function selectQuizOpt(i){ quizAnswers[quizStep]=i; renderQuiz(); }
+function quizNext(){
+  if(quizAnswers[quizStep]===undefined){ showToast('👆','Please pick an option'); return; }
+  if(quizStep<quizQuestions.length-1){ quizStep++; renderQuiz(); }
+  else { showQuizResult(); }
+}
+function quizPrev(){ if(quizStep>0){ quizStep--; renderQuiz(); } }
+function showQuizResult(){
+  const lightMap=['low','medium','medium','high'];
+  const careMap=['low','low','medium','medium'];
+  const light=lightMap[quizAnswers[2]||0];
+  const care=careMap[quizAnswers[1]||0];
+  const recs=allPlants.filter(p=>p.maintenance===care||(p.sunlight===light&&p.maintenance!=='high')).slice(0,3);
+  document.getElementById('quiz-content').innerHTML=`<div style="text-align:center;margin-bottom:20px"><div style="font-size:32px">🎉</div><div style="font-size:18px;font-weight:700;color:var(--dark);margin:8px 0">Your Perfect Matches!</div><div style="font-size:13px;color:var(--muted)">Based on your space, experience & lifestyle</div></div>${recs.map(p=>`<div style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--green-100);border-radius:var(--r-lg);margin-bottom:10px;cursor:pointer;background:var(--green-50)" onclick="addToCart(${p.id})"><img src="${p.img}" style="width:48px;height:48px;border-radius:var(--r-md);object-fit:cover"><div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--dark)">${p.name}</div><div style="font-size:12px;color:var(--muted)">₹${p.price.toLocaleString()} · ${p.maintenance} care</div></div><button class="add-cart-btn" onclick="addToCart(${p.id},event)">🛒</button></div>`).join('')}<button onclick="quizStep=0;quizAnswers=[];renderQuiz()" style="width:100%;background:transparent;border:1.5px solid var(--green-200);border-radius:var(--r-full);padding:10px;font-size:13px;font-weight:600;color:var(--green-600);cursor:pointer;font-family:'Outfit',sans-serif;margin-top:8px">Retake Quiz</button>`;
+  document.getElementById('quiz-nav').style.display='none';
+}
+
+// ── PLANT DOCTOR (AI) ──
+let doctorAnalyzing = false;
+function triggerUpload(){ if(!doctorAnalyzing) document.getElementById('plant-file-input').click(); }
+function dragOver(e){ e.preventDefault(); document.getElementById('doctor-upload').classList.add('dragover'); }
+function dragLeave(e){ document.getElementById('doctor-upload').classList.remove('dragover'); }
+function dropFile(e){
+  e.preventDefault();
+  document.getElementById('doctor-upload').classList.remove('dragover');
+  const file = e.dataTransfer?.files?.[0];
+  if (file && file.type.startsWith('image/')) processPlantImage(file);
+}
+function handleFileSelect(e){ const file=e.target.files?.[0]; if(file) processPlantImage(file); }
+
+async function processPlantImage(file){
+  if(doctorAnalyzing) return;
+  doctorAnalyzing=true;
+  const icon=document.getElementById('doctor-upload-icon');
+  const textEl=document.getElementById('doctor-upload-text');
+  const progressWrap=document.getElementById('doctor-loading');
+  const progressBar=document.getElementById('doctor-progress');
+  const analyzingEl=document.getElementById('doctor-analyzing');
+  const resultEl=document.getElementById('doctor-result');
+
+  // Show image preview
+  const reader=new FileReader();
+  reader.onload=e=>{
+    icon.innerHTML=`<img src="${e.target.result}" style="width:80px;height:80px;object-fit:cover;border-radius:var(--r-lg)">`;
+  };
+  reader.readAsDataURL(file);
+
+  textEl.style.display='none';
+  resultEl.style.display='none';
+  progressWrap.style.display='block';
+  analyzingEl.style.display='block';
+
+  // Animate progress
+  let p=0;
+  const interval=setInterval(()=>{ p=Math.min(p+Math.random()*5+2,90); progressBar.style.width=p+'%'; },150);
+
+  try {
+    const formData=new FormData();
+    formData.append('image',file);
+    const res=await fetch(`${API_BASE}/api/detect-plant`,{method:'POST',body:formData});
+    const data=await res.json();
+
+    clearInterval(interval);
+    progressBar.style.width='100%';
+
+    await new Promise(r=>setTimeout(r,400));
+    progressWrap.style.display='none';
+    analyzingEl.style.display='none';
+
+    if(data.error){
+      showToast('⚠️','Analysis failed',data.error);
+      resetDoctor(); return;
+    }
+
+    // Populate result
+    const dot=document.getElementById('health-dot');
+    dot.className='health-dot'+(data.healthColor==='warning'?' warning':data.healthColor==='danger'?' danger':'');
+    document.getElementById('health-status').textContent=data.healthStatus||'Unknown';
+    document.getElementById('health-score').textContent=(data.healthScore||50)+'% Health';
+    document.getElementById('plant-identified').textContent=data.plantName||'Unknown Plant';
+    document.getElementById('plant-confidence').textContent=data.confidence?`${data.confidence}% identification confidence`:'';
+    document.getElementById('health-diagnosis').textContent=data.diagnosis||'';
+    if(data.issues&&data.issues.length){
+      document.getElementById('health-issues-wrap').style.display='block';
+      document.getElementById('health-issues').innerHTML=data.issues.map(i=>`<li>${i}</li>`).join('');
+    }
+    document.getElementById('health-treatments').innerHTML=(data.treatments||[]).map(t=>`<li>${t}</li>`).join('');
+    resultEl.style.display='block';
+    showToast('🔬','Analysis complete!',data.plantName);
+  } catch(err){
+    clearInterval(interval);
+    progressWrap.style.display='none';
+    analyzingEl.style.display='none';
+    showToast('⚠️','AI unavailable','Please configure ANTHROPIC_API_KEY on the server');
+    resetDoctor();
+  }
+  doctorAnalyzing=false;
+}
+
+function resetDoctor(){
+  document.getElementById('doctor-upload-icon').innerHTML='📷';
+  document.getElementById('doctor-upload-text').style.display='block';
+  document.getElementById('doctor-result').style.display='none';
+  document.getElementById('doctor-loading').style.display='none';
+  document.getElementById('doctor-progress').style.width='0%';
+  document.getElementById('doctor-analyzing').style.display='none';
+  document.getElementById('plant-file-input').value='';
+  doctorAnalyzing=false;
+}
+
+// ── AI CHATBOX ──
+let chatOpen=false, isSending=false;
+
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chat-panel').classList.toggle('open',chatOpen);
+  document.getElementById('chat-badge').style.display='none';
+  if(chatOpen) setTimeout(()=>document.getElementById('chat-input').focus(),300);
+}
+
+function sendQuickReply(text){
+  document.getElementById('chat-input').value=text;
+  sendMessage();
+  document.getElementById('quick-replies').style.display='none';
+}
+
+async function sendMessage(){
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();
+  if(!text||isSending) return;
+  isSending=true;
+  input.value='';
+  document.getElementById('chat-send').disabled=true;
+  document.getElementById('quick-replies').style.display='none';
+
+  appendMsg('user',text);
+  chatHistory.push({role:'user',content:text});
+
+  // Typing indicator
+  const typingId='typing-'+Date.now();
+  appendTyping(typingId);
+  scrollChat();
+
+  try{
+    const res=await fetch(`${API_BASE}/api/chat`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:chatHistory})
+    });
+    const data=await res.json();
+    removeTyping(typingId);
+    const reply=data.reply||data.error||'Sorry, something went wrong.';
+    chatHistory.push({role:'assistant',content:reply});
+    appendMsg('bot',reply);
+  } catch(e){
+    removeTyping(typingId);
+    appendMsg('bot','I\'m having trouble connecting right now 🌿 Please make sure the backend server is running with your Anthropic API key configured.');
+  }
+
+  isSending=false;
+  document.getElementById('chat-send').disabled=false;
+  setTimeout(()=>input.focus(),100);
+}
+
+function appendMsg(role,text){
+  const msgs=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className=`chat-message ${role}`;
+  div.innerHTML=`${role==='bot'?'<div class="chat-msg-avatar">🌿</div>':''}<div class="chat-msg-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(div);
+  scrollChat();
+}
+function appendTyping(id){
+  const msgs=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className='chat-message bot'; div.id=id;
+  div.innerHTML=`<div class="chat-msg-avatar">🌿</div><div class="chat-typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  msgs.appendChild(div); scrollChat();
+}
+function removeTyping(id){ document.getElementById(id)?.remove(); }
+function scrollChat(){ const m=document.getElementById('chat-messages'); m.scrollTop=m.scrollHeight; }
+
+// ── MOBILE MENU ──
+function closeMobileMenu(){ document.getElementById('mobile-menu').classList.remove('open'); document.body.style.overflow=''; }
+document.getElementById('hamburger').addEventListener('click',()=>{ document.getElementById('mobile-menu').classList.add('open'); document.body.style.overflow='hidden'; });
+document.getElementById('mobile-close').addEventListener('click',closeMobileMenu);
+
+// ── HEADER SCROLL ──
+window.addEventListener('scroll',()=>document.getElementById('header').classList.toggle('scrolled',window.scrollY>10));
+
+// ── ECO BARS ──
+function renderEcoBars(){
+  const c=document.getElementById('eco-bars');
+  const months=['J','F','M','A','M','J','J','A','S','O','N','D'];
+  const vals=[35,42,58,72,85,91,78,84,95,88,76,90];
+  c.innerHTML=months.map((m,i)=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div class="eco-tree-bar" style="width:18px;height:${vals[i]*0.7}px;animation-delay:${i*0.05}s;opacity:${0.5+vals[i]/200}"></div><span style="font-size:9px;color:rgba(255,255,255,.4)">${m}</span></div>`).join('');
+}
+
+// ── INTERSECTION OBSERVER ──
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('visible'); }
+  });
+},{threshold:.1});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+
+// ── INIT ──
+fetchPlants();
+renderQuiz();
+renderEcoBars();
+updateCartUI();
+if(savedPlants.length>0) document.getElementById('wishlist-btn').textContent='❤️';
+</script>
+</body>
+</html>
