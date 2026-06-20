@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plant Quiz — Find Your Perfect Match | EcoPlant Pro</title>
+  <meta name="description" content="Answer 4 quick questions and our AI finds the exact plants that will thrive in your space and lifestyle.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --dark:#080f0a; --dark2:#0d1a0f; --dark3:#122015;
+      --green:#1e5c38; --green2:#26754a; --green3:#4d9e72;
+      --gold:#c8902e; --gold2:#e6ad4a; --gold3:#f5d080;
+      --cream:#f5f0e6; --cream2:#ede7d8; --cream3:#faf7f0;
+      --ink:#0a100c; --ink2:#163527;
+      --sage:#6b9e84; --sage2:#a5c2b0; --sage3:#d2e5d8;
+      --white:#fff;
+      --fd:'Playfair Display',Georgia,serif;
+      --fb:'DM Sans',sans-serif;
+      --r12:12px; --r16:16px; --r20:20px; --r24:24px; --rx:999px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;font-size:16px}
+    body{font-family:var(--fb);background:var(--cream3);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:100;background:rgba(8,15,10,.96);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-bottom:1px solid rgba(255,255,255,.07);height:68px}
+    .nav-in{max-width:1320px;margin:0 auto;padding:0 clamp(16px,4vw,48px);height:100%;display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;align-items:center;gap:10px;font-family:var(--fd);font-size:22px;font-weight:700;color:#fff;text-decoration:none}
+    .logo-dot{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--green2));display:grid;place-items:center;font-size:16px;overflow:hidden}
+    .logo-dot img{width:100%;height:100%;object-fit:cover}
+    .nav-back{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;border-radius:var(--rx);border:1.5px solid rgba(255,255,255,.18);color:rgba(255,255,255,.8);font-size:13.5px;font-weight:500;text-decoration:none;transition:.25s;letter-spacing:.02em}
+    .nav-back:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.35)}
+    .nav-back svg{transition:.25s}
+    .nav-back:hover svg{transform:translateX(-3px)}
+
+    /* PAGE LAYOUT */
+    .page{display:grid;grid-template-columns:1fr 1.5fr;min-height:calc(100vh - 68px)}
+
+    /* LEFT PANEL */
+    .panel-l{background:linear-gradient(170deg,var(--dark) 0%,var(--dark2) 50%,var(--dark3) 100%);padding:clamp(32px,5vw,64px);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+    .panel-l::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 30% 40%,rgba(30,92,56,.28) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 80% 80%,rgba(200,144,46,.1) 0%,transparent 60%);pointer-events:none}
+    .panel-l-content{position:relative;z-index:1}
+    .quiz-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--rx);padding:7px 16px;font-size:11px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;margin-bottom:24px}
+    .quiz-eyebrow span{width:6px;height:6px;border-radius:50%;background:var(--gold2);animation:blink 2s ease-in-out infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .panel-l h2{font-family:var(--fd);font-size:clamp(28px,3.5vw,46px);font-weight:700;color:#fff;line-height:1.15;margin-bottom:16px}
+    .panel-l h2 em{color:var(--gold2);font-style:italic}
+    .panel-l p{color:rgba(255,255,255,.55);font-size:15px;line-height:1.8;font-weight:300;margin-bottom:40px}
+
+    /* STEP PROGRESS */
+    .steps{display:flex;flex-direction:column;gap:12px}
+    .step-item{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:var(--r16);transition:.3s}
+    .step-item.active{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}
+    .step-item.done{opacity:.6}
+    .step-ic{width:38px;height:38px;border-radius:var(--r12);display:grid;place-items:center;font-size:16px;flex-shrink:0;transition:.3s}
+    .step-item.pending .step-ic{background:rgba(255,255,255,.06)}
+    .step-item.active .step-ic{background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 4px 16px rgba(200,144,46,.35)}
+    .step-item.done .step-ic{background:linear-gradient(135deg,var(--green),var(--green2))}
+    .step-lbl{font-size:13px;font-weight:600;color:rgba(255,255,255,.8)}
+    .step-sub{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
+    .step-item.active .step-lbl{color:#fff}
+    .step-item.active .step-sub{color:rgba(255,255,255,.55)}
+
+    /* DECORATIVE */
+    .panel-l-art{position:relative;z-index:1;margin-top:40px}
+    .art-img{width:100%;border-radius:var(--r20);overflow:hidden;aspect-ratio:4/3;position:relative}
+    .art-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.6) saturate(1.2)}
+    .art-badge{position:absolute;bottom:16px;left:16px;background:rgba(8,15,10,.8);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);border-radius:var(--r16);padding:10px 16px;color:#fff}
+    .art-badge div:first-child{font-family:var(--fd);font-size:18px;font-weight:700;color:var(--gold2)}
+    .art-badge div:last-child{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;letter-spacing:.05em;text-transform:uppercase}
+
+    /* RIGHT PANEL */
+    .panel-r{background:var(--cream3);display:flex;align-items:center;justify-content:center;padding:clamp(32px,5vw,64px);position:relative}
+    .panel-r::before{content:'';position:absolute;top:0;right:0;width:300px;height:300px;background:radial-gradient(circle,rgba(30,92,56,.06) 0%,transparent 70%);pointer-events:none}
+
+    /* QUIZ CARD */
+    .quiz-card{width:100%;max-width:560px;background:#fff;border-radius:28px;padding:clamp(28px,4vw,44px);box-shadow:0 8px 40px rgba(10,16,12,.10),0 2px 8px rgba(10,16,12,.06);position:relative;overflow:hidden}
+    .quiz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--green),var(--green2),var(--gold))}
+
+    /* PROGRESS */
+    .prog-area{margin-bottom:28px}
+    .prog-labels{display:flex;justify-content:space-between;margin-bottom:8px}
+    .prog-step{font-size:12px;font-weight:700;color:var(--green);letter-spacing:.06em;text-transform:uppercase}
+    .prog-frac{font-size:12px;color:var(--sage)}
+    .prog-bar{height:6px;background:var(--sage3);border-radius:99px;overflow:hidden}
+    .prog-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green2));border-radius:99px;transition:width .5s cubic-bezier(.34,1.56,.64,1)}
+
+    /* QUESTION */
+    .q-text{font-family:var(--fd);font-size:clamp(18px,2.5vw,24px);font-weight:700;color:var(--ink2);line-height:1.35;margin-bottom:24px}
+    .q-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+    .q-opt{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:var(--r16);border:2px solid var(--sage3);cursor:pointer;background:var(--cream3);transition:all .22s ease;position:relative;overflow:hidden}
+    .q-opt::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(30,92,56,.04),transparent);opacity:0;transition:.22s}
+    .q-opt:hover{border-color:var(--green2);background:#fff;transform:translateX(4px)}
+    .q-opt:hover::before{opacity:1}
+    .q-opt.sel{border-color:var(--green);background:rgba(30,92,56,.04);box-shadow:0 0 0 4px rgba(30,92,56,.08)}
+    .q-opt.sel .opt-ic{background:linear-gradient(135deg,var(--green),var(--green2));box-shadow:0 4px 12px rgba(30,92,56,.3)}
+    .opt-ic{width:46px;height:46px;border-radius:var(--r12);background:var(--sage3);display:grid;place-items:center;font-size:20px;flex-shrink:0;transition:.22s}
+    .opt-lbl{font-size:14px;font-weight:700;color:var(--ink2)}
+    .opt-desc{font-size:12px;color:var(--sage);margin-top:3px;line-height:1.4}
+    .opt-check{margin-left:auto;width:22px;height:22px;border-radius:50%;border:2px solid var(--sage3);display:grid;place-items:center;flex-shrink:0;transition:.22s;font-size:11px;color:transparent}
+    .q-opt.sel .opt-check{background:var(--green);border-color:var(--green);color:#fff}
+
+    /* NAV BUTTONS */
+    .q-nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--rx);font-family:var(--fb);font-weight:600;font-size:14px;cursor:pointer;transition:all .25s ease;letter-spacing:.03em;white-space:nowrap}
+    .btn-primary{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;padding:13px 28px;box-shadow:0 4px 18px rgba(30,92,56,.28)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(30,92,56,.40)}
+    .btn-primary:active{transform:translateY(0)}
+    .btn-secondary{background:transparent;color:var(--ink2);border:1.5px solid var(--sage2);padding:12px 22px}
+    .btn-secondary:hover{background:var(--sage3);border-color:var(--sage)}
+
+    /* RESULT */
+    .result-head{text-align:center;padding:8px 0 24px}
+    .result-emoji{font-size:52px;line-height:1;margin-bottom:12px;animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+    @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+    .result-head h2{font-family:var(--fd);font-size:clamp(22px,3vw,30px);font-weight:700;color:var(--ink2);margin-bottom:8px}
+    .result-head p{color:var(--sage);font-size:14px;line-height:1.6}
+    .rec-list{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+    .rec-item{display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--r20);border:1.5px solid var(--sage3);background:var(--cream3);cursor:pointer;transition:all .28s ease}
+    .rec-item:hover{border-color:var(--green2);transform:translateY(-3px);box-shadow:0 12px 32px rgba(10,16,12,.10);background:#fff}
+    .rec-img{width:60px;height:68px;border-radius:var(--r12);object-fit:cover;flex-shrink:0}
+    .rec-name{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--ink2)}
+    .rec-meta{font-size:12px;color:var(--sage);margin-top:3px}
+    .rec-price{font-size:14px;font-weight:700;color:var(--green);margin-top:4px}
+    .rec-add{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;border:none;font-size:20px;display:grid;place-items:center;flex-shrink:0;cursor:pointer;transition:all .22s ease;box-shadow:0 3px 12px rgba(30,92,56,.25)}
+    .rec-add:hover{transform:scale(1.12);box-shadow:0 6px 20px rgba(30,92,56,.38)}
+    .retake-btn{width:100%;border:1.5px solid var(--sage2);border-radius:var(--rx);padding:13px;font-size:14px;font-weight:600;color:var(--ink2);cursor:pointer;background:transparent;font-family:var(--fb);transition:.25s;letter-spacing:.03em}
+    .retake-btn:hover{background:var(--sage3);border-color:var(--sage)}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark);color:#fff;padding:14px 22px;border-radius:var(--rx);font-size:13.5px;font-weight:500;z-index:9999;transition:.32s cubic-bezier(.34,1.56,.64,1);opacity:0;pointer-events:none;white-space:nowrap;display:flex;align-items:center;gap:10px;max-width:min(420px,90vw);box-shadow:0 16px 48px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08)}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+    /* MOBILE */
+    @media(max-width:768px){
+      .page{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+      .panel-l{padding:28px 20px;min-height:auto}
+      .panel-l-art{display:none}
+      .steps{flex-direction:row;flex-wrap:wrap;gap:8px}
+      .step-item{padding:8px 12px;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+      .step-sub{display:none}
+      .panel-r{padding:28px 20px;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-in">
+    <a href="index.html" class="logo">
+      <div class="logo-dot"><img src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=200&q=80&fit=crop" alt=""></div>
+      EcoPlant
+    </a>
+    <a href="index.html" class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      Back to Home
+    </a>
+  </div>
+</nav>
+
+<div class="page">
+  <!-- LEFT PANEL -->
+  <div class="panel-l">
+    <div class="panel-l-content">
+      <div class="quiz-eyebrow"><span></span>AI Plant Quiz</div>
+      <h2>Find your <em>perfect</em><br>plant match</h2>
+      <p>Answer 4 quick questions and our AI recommends plants that truly suit your space, lifestyle and experience level.</p>
+      <div class="steps" id="steps-panel">
+        <div class="step-item active" id="si-0">
+          <div class="step-ic">🏠</div>
+          <div><div class="step-lbl">Your Space</div><div class="step-sub">Apartment, house or outdoors</div></div>
+        </div>
+        <div class="step-item pending" id="si-1">
+          <div class="step-ic">🌱</div>
+          <div><div class="step-lbl">Experience</div><div class="step-sub">Beginner to expert</div></div>
+        </div>
+        <div class="step-item pending" id="si-2">
+          <div class="step-ic">☀️</div>
+          <div><div class="step-lbl">Light Level</div><div class="step-sub">How much sun you get</div></div>
+        </div>
+        <div class="step-item pending" id="si-3">
+          <div class="step-ic">💧</div>
+          <div><div class="step-lbl">Watering Style</div><div class="step-sub">How often you'll water</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel-l-art">
+      <div class="art-img">
+        <img src="https://images.unsplash.com/photo-1463936575829-25148e1db1b8?w=800&q=85&fit=crop" alt="Beautiful indoor plants">
+        <div class="art-badge">
+          <div>28k+</div>
+          <div>Happy plant parents</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel-r">
+    <div class="quiz-card">
+      <div class="prog-area">
+        <div class="prog-labels">
+          <span class="prog-step" id="prog-step">Step 1 of 4</span>
+          <span class="prog-frac" id="prog-frac">25%</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:25%"></div></div>
+      </div>
+      <div id="quiz-body"></div>
+      <div class="q-nav" id="quiz-nav">
+        <button id="btn-prev" class="btn btn-secondary" style="display:none" onclick="quizPrev()">← Back</button>
+        <div style="flex:1"></div>
+        <button id="btn-next" class="btn btn-primary" onclick="quizNext()">Next Step →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PLANTS = [
+  {id:1,name:'Monstera Deliciosa',sci:'Monstera deliciosa',price:899,img:'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=800&q=85&fit=crop',maint:'low',sun:'medium',water:'weekly',air:true},
+  {id:2,name:'Snake Plant',sci:'Sansevieria trifasciata',price:549,img:'https://images.unsplash.com/photo-1572688484438-313a6e50c333?w=800&q=85&fit=crop',maint:'low',sun:'low',water:'2 weeks',air:true},
+  {id:3,name:'Peace Lily',sci:'Spathiphyllum wallisii',price:699,img:'https://images.unsplash.com/photo-1593691509543-c55fb32d8de5?w=800&q=85&fit=crop',maint:'medium',sun:'low',water:'weekly',air:true},
+  {id:4,name:'Golden Pothos',sci:'Epipremnum aureum',price:349,img:'https://images.unsplash.com/photo-1508022713622-df2d8fb7b4cd?w=800&q=85&fit=crop',maint:'low',sun:'low',water:'weekly',air:true},
+  {id:5,name:'Spider Plant',sci:'Chlorophytum comosum',price:449,img:'https://images.unsplash.com/photo-1596302736603-66c3ed5dc059?w=800&q=85&fit=crop',maint:'low',sun:'medium',water:'weekly',air:true},
+  {id:6,name:'Fiddle Leaf Fig',sci:'Ficus lyrata',price:1499,img:'https://images.unsplash.com/photo-1597055181300-6a187cdb2dbf?w=800&q=85&fit=crop',maint:'high',sun:'high',water:'weekly',air:false},
+  {id:7,name:'ZZ Plant',sci:'Zamioculcas zamiifolia',price:649,img:'https://images.unsplash.com/photo-1632207691143-643e2a9a9361?w=800&q=85&fit=crop',maint:'low',sun:'low',water:'2 weeks',air:false},
+  {id:8,name:'Rubber Plant',sci:'Ficus elastica',price:799,img:'https://images.unsplash.com/photo-1585336261022-680e295ce3fe?w=800&q=85&fit=crop',maint:'medium',sun:'medium',water:'weekly',air:true},
+  {id:9,name:'Bird of Paradise',sci:'Strelitzia reginae',price:1849,img:'https://images.unsplash.com/photo-1534710961216-75c88202f43e?w=800&q=85&fit=crop',maint:'medium',sun:'high',water:'weekly',air:false},
+  {id:10,name:'Aloe Vera',sci:'Aloe barbadensis',price:349,img:'https://images.unsplash.com/photo-1596729040015-40b61f0c4c5f?w=800&q=85&fit=crop',maint:'low',sun:'high',water:'3 weeks',air:false},
+];
+
+const QS = [
+  {q:'What best describes your living space?',opts:[{i:'🏢',l:'Small Apartment',d:'Under 600 sq ft, compact & cozy'},{i:'🏠',l:'Mid-size Home',d:'600–1200 sq ft with good space'},{i:'🏡',l:'Spacious House',d:'1200+ sq ft, room to breathe'},{i:'🌿',l:'Outdoor / Balcony',d:'Garden, terrace or open area'}]},
+  {q:'How experienced are you with plants?',opts:[{i:'🌱',l:'Total Beginner',d:'This would be my first plant'},{i:'🌿',l:'Some Experience',d:'Kept a few plants alive'},{i:'🪴',l:'Intermediate',d:'I have a small collection'},{i:'🌳',l:'Plant Expert',d:'I propagate & grow from seed'}]},
+  {q:'How much natural light do you get?',opts:[{i:'🌑',l:'Very Low Light',d:'North-facing or heavily shaded'},{i:'⛅',l:'Moderate Light',d:'East or west facing windows'},{i:'☀️',l:'Bright Indirect',d:'Near large south-facing windows'},{i:'🌞',l:'Direct Full Sun',d:'Sunny all day, no shade'}]},
+  {q:'How often will you water your plants?',opts:[{i:'🐪',l:'Rarely (Monthly)',d:"I travel a lot or often forget"},{i:'📅',l:'Occasionally',d:'Every 2 weeks or so'},{i:'💧',l:'Regularly (Weekly)',d:'I enjoy the routine'},{i:'🚿',l:'Enthusiastically',d:'Multiple times a week'}]},
+];
+
+let step=0, answers={};
+
+function render(){
+  if(step>=QS.length){showResult();return;}
+  const q=QS[step];
+  const pct=Math.round(((step+1)/QS.length)*100);
+  document.getElementById('prog-step').textContent=`Step ${step+1} of ${QS.length}`;
+  document.getElementById('prog-frac').textContent=`${pct}%`;
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('btn-prev').style.display=step>0?'inline-flex':'none';
+  document.getElementById('btn-next').textContent=step===QS.length-1?'Get My Plants 🌿':'Next Step →';
+  document.getElementById('quiz-nav').style.display='flex';
+
+  document.getElementById('quiz-body').innerHTML=`
+    <div class="q-text">${q.q}</div>
+    <div class="q-opts">
+      ${q.opts.map((o,i)=>`
+        <div class="q-opt${answers[step]===i?' sel':''}" onclick="pick(${i})">
+          <div class="opt-ic">${o.i}</div>
+          <div style="flex:1">
+            <div class="opt-lbl">${o.l}</div>
+            <div class="opt-desc">${o.d}</div>
+          </div>
+          <div class="opt-check">${answers[step]===i?'✓':''}</div>
+        </div>`).join('')}
+    </div>`;
+
+  // Update step panel
+  [0,1,2,3].forEach(i=>{
+    const el=document.getElementById(`si-${i}`);
+    if(!el)return;
+    el.className='step-item '+(i<step?'done':i===step?'active':'pending');
+  });
+}
+
+function pick(i){answers[step]=i;render();}
+function quizNext(){if(answers[step]===undefined){showToast('👆','Please select an option first');return;}if(step<QS.length-1){step++;render();}else{showResult();}}
+function quizPrev(){if(step>0){step--;render();}}
+
+function showResult(){
+  document.getElementById('quiz-nav').style.display='none';
+  document.getElementById('prog-fill').style.width='100%';
+  document.getElementById('prog-step').textContent='Your Results';
+  document.getElementById('prog-frac').textContent='✓ Done';
+  [0,1,2,3].forEach(i=>{const el=document.getElementById(`si-${i}`);if(el)el.className='step-item done';});
+  const lightM=['low','medium','medium','high'];
+  const careM=['low','low','medium','medium'];
+  const light=lightM[answers[2]||0];
+  const care=careM[answers[1]||0];
+  const recs=PLANTS.filter(p=>p.maint===care||(p.sun===light&&p.maint!=='high')).slice(0,4);
+  document.getElementById('quiz-body').innerHTML=`
+    <div class="result-head">
+      <div class="result-emoji">🎉</div>
+      <h2>Your Perfect Matches!</h2>
+      <p>Curated from 200+ species based on your space &amp; lifestyle</p>
+    </div>
+    <div class="rec-list">
+      ${recs.map(p=>`
+        <div class="rec-item">
+          <img class="rec-img" src="${p.img}" alt="${p.name}" loading="lazy">
+          <div style="flex:1;min-width:0">
+            <div class="rec-name">${p.name}</div>
+            <div class="rec-meta">${p.sci} · ${p.maint} care · ${p.sun} light</div>
+            <div class="rec-price">₹${p.price.toLocaleString('en-IN')}</div>
+          </div>
+          <button class="rec-add" onclick="addToCart(${p.id})" title="Add to cart">+</button>
+        </div>`).join('')}
+    </div>
+    <button class="retake-btn" onclick="retake()">↩ Retake Quiz</button>`;
+}
+
+function addToCart(id){
+  const cart=JSON.parse(localStorage.getItem('ep_cart')||'[]');
+  const ex=cart.find(c=>c.id===id);
+  if(ex){ex.qty=(ex.qty||1)+1;}else{const p=PLANTS.find(x=>x.id===id);if(p)cart.push({...p,qty:1});}
+  localStorage.setItem('ep_cart',JSON.stringify(cart));
+  const p=PLANTS.find(x=>x.id===id);
+  showToast('🛒',`${p?.name||'Plant'} added!`,'Go to home to checkout');
+}
+
+function retake(){step=0;answers={};document.getElementById('quiz-nav').style.display='flex';render();}
+
+function showToast(icon,title,sub=''){
+  const t=document.getElementById('toast');
+  t.innerHTML=`<span>${icon}</span><span><strong>${title}</strong>${sub?` — ${sub}`:''}</span>`;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+render();
+</script>
+</body>
+</html>
