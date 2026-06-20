@@ -39,3 +39,8 @@ logs/
 
 # Temp scripts
 inject_design.js
+
+# Vercel env files (contain secrets)
+.env.vercel
+.env.vercel.prod
+raw_*.html
