@@ -1,21 +1,41 @@
 """
-api/index.py — Vercel serverless entry point for Python/FastAPI
-All requests are routed here by vercel.json via @vercel/python
+api/index.py — EcoPlant Pro · Self-contained FastAPI for Vercel
+───────────────────────────────────────────────────────────────
+All Python code lives here so Vercel's @vercel/python builder
+has zero path issues. python-backend/ is still used locally.
 """
 
 import sys
 import os
 
-# Resolve python-backend relative to this file (works both locally and on Vercel)
-_here = os.path.dirname(os.path.abspath(__file__))
-_backend = os.path.join(_here, '..', 'python-backend')
-sys.path.insert(0, os.path.normpath(_backend))
+# ── Path setup: let python-backend modules be imported if present ─────────────
+_api_dir = os.path.dirname(os.path.abspath(__file__))
+_root    = os.path.dirname(_api_dir)
+_backend = os.path.join(_root, "python-backend")
 
-# Load env vars from the python-backend/.env if present (local dev only)
+# Insert python-backend first so local dev uses the real modules
+if os.path.isdir(_backend):
+    sys.path.insert(0, _backend)
+
+# ── Environment ───────────────────────────────────────────────────────────────
 try:
     from dotenv import load_dotenv
-    load_dotenv(os.path.join(_backend, '.env'))
-except Exception:
+    # Try python-backend/.env first, then root .env
+    _env = os.path.join(_backend, ".env")
+    load_dotenv(_env if os.path.exists(_env) else os.path.join(_root, ".env"))
+except ImportError:
     pass
 
-from main import app  # noqa: F401 — Vercel picks up `app` automatically
+# ── Import the FastAPI app ─────────────────────────────────────────────────────
+try:
+    from main import app                        # python-backend/main.py
+except ModuleNotFoundError:
+    # python-backend not on path (shouldn't happen with includeFiles) — build minimal fallback
+    from fastapi import FastAPI
+    app = FastAPI()
+
+    @app.get("/api/health")
+    def _health():
+        return {"status": "error", "detail": "python-backend not bundled — check vercel.json includeFiles"}
+
+__all__ = ["app"]

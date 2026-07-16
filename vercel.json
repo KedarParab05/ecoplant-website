@@ -1,47 +1,36 @@
 {
   "version": 2,
   "buildCommand": "npm run vercel-build",
-  "env": {
-    "PYTHONPATH": "python-backend"
-  },
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "150mb",
-        "excludeFiles": "**/__pycache__/**,**/*.pyc,**/*.pyo,python-backend/public/**,backend/**,node_modules/**",
-        "includeFiles": [
-          "python-backend/**",
-          "api/**"
-        ]
-      }
+  "functions": {
+    "api/index.py": {
+      "runtime": "python3.12",
+      "maxDuration": 30,
+      "memory": 1024,
+      "includeFiles": "python-backend/**"
     }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/index.py" }
   ],
-  "routes": [
+  "headers": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.py"
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
     },
     {
-      "src": "/plants-imgs/(.*\\.(?:avif|jpg|jpeg|png|webp|gif|svg))",
-      "dest": "/plants-imgs/$1"
-    },
-    {
-      "src": "/(.*\\.(?:js|css|avif|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot))",
-      "dest": "/$1"
-    },
-    {
-      "src": "/quiz\\.html",
-      "dest": "/quiz.html"
-    },
-    {
-      "src": "/doctor\\.html",
-      "dest": "/doctor.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=(self)" },
+        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains; preload" }
+      ]
     }
   ]
 }
