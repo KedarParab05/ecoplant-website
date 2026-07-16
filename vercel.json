@@ -1,15 +1,37 @@
 {
   "version": 2,
-  "buildCommand": "npm run vercel-build",
-  "functions": {
-    "api/index.py": {
-      "runtime": "python3.12",
-      "maxDuration": 30,
-      "memory": 1024
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "150mb" }
+    },
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "plants-imgs/**",
+      "use": "@vercel/static"
     }
-  },
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/index.py" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.py" },
+    {
+      "src": "/(.*\\.(?:js|css|avif|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot))",
+      "dest": "/$1"
+    },
+    { "src": "/quiz\\.html", "dest": "/quiz.html" },
+    { "src": "/doctor\\.html", "dest": "/doctor.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ],
   "headers": [
     {

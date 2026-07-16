@@ -2,14 +2,11 @@
   "name": "ecoplant-pro",
   "version": "1.0.0",
   "description": "EcoPlant Pro - Full-stack plant e-commerce",
-  "engines": {
-    "node": ">=18.x"
-  },
+  "private": true,
   "scripts": {
     "start": "cd backend && node server.js",
     "dev": "cd backend && npm run dev",
-    "sync": "copy /Y index.html backend\\public\\index.html",
-    "vercel-build": "node -e \"const fs=require('fs');fs.mkdirSync('python-backend/public',{recursive:true});['index.html','quiz.html','doctor.html'].forEach(f=>{if(fs.existsSync(f))fs.copyFileSync(f,'python-backend/public/'+f)});if(fs.existsSync('plants-imgs'))fs.cpSync('plants-imgs','python-backend/public/plants-imgs',{recursive:true});if(fs.existsSync('chatbot-widget.js'))fs.copyFileSync('chatbot-widget.js','python-backend/public/chatbot-widget.js');if(fs.existsSync('plant-ai.js'))fs.copyFileSync('plant-ai.js','python-backend/public/plant-ai.js');if(fs.existsSync('inject_design.js'))fs.copyFileSync('inject_design.js','python-backend/public/inject_design.js');console.log('Copied site assets to python-backend/public/');\""
+    "sync": "copy /Y index.html backend\\public\\index.html"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",
