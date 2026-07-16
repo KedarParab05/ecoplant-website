@@ -1,0 +1,16 @@
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+backend/node_modules
+python-backend/public
+node_modules
+.git
+.vscode
+*.log
+.env
+backend/.env
+python-backend/.env
+raw_*.html

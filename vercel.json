@@ -1,12 +1,16 @@
 {
   "version": 2,
   "buildCommand": "npm run vercel-build",
+  "env": {
+    "PYTHONPATH": "python-backend"
+  },
   "builds": [
     {
       "src": "api/index.py",
       "use": "@vercel/python",
       "config": {
-        "maxLambdaSize": "50mb",
+        "maxLambdaSize": "150mb",
+        "excludeFiles": "**/__pycache__/**,**/*.pyc,**/*.pyo,python-backend/public/**,backend/**,node_modules/**",
         "includeFiles": [
           "python-backend/**",
           "api/**"
