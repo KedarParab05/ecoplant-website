@@ -44,3 +44,16 @@ inject_design.js
 .env.vercel
 .env.vercel.prod
 raw_*.html
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+*.egg
+.env
+python-backend/.env
+python-backend/public/

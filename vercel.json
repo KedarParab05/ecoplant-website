@@ -1,34 +1,47 @@
 {
   "version": 2,
-  "buildCommand": "npm run vercel-build",
-  "outputDirectory": "backend/public",
+  "buildCommand": "python -c \"import os, shutil; [shutil.copy(f, 'python-backend/public/' + f) for f in ['index.html','quiz.html','doctor.html'] if os.path.exists(f)]; shutil.copytree('plants-imgs', 'python-backend/public/plants-imgs', dirs_exist_ok=True) if os.path.exists('plants-imgs') else None; print('Copied frontend assets')\"",
   "builds": [
     {
-      "src": "backend/server.js",
-      "use": "@vercel/node",
+      "src": "api/index.py",
+      "use": "@vercel/python",
       "config": {
+        "maxLambdaSize": "50mb",
         "includeFiles": [
-          "backend/public/**"
+          "python-backend/**",
+          "api/**"
         ]
       }
+    },
+    {
+      "src": "**/*.{html,js,css,avif,jpg,jpeg,png,webp,gif,ico,svg}",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "backend/server.js"
+      "dest": "/api/index.py"
     },
     {
       "src": "/plants-imgs/(.*)",
-      "dest": "backend/server.js"
+      "dest": "/plants-imgs/$1"
     },
     {
-      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot))",
-      "dest": "backend/public/$1"
+      "src": "/(.*\\.(?:js|css|avif|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot))",
+      "dest": "/$1"
+    },
+    {
+      "src": "/quiz.html",
+      "dest": "/quiz.html"
+    },
+    {
+      "src": "/doctor.html",
+      "dest": "/doctor.html"
     },
     {
       "src": "/(.*)",
-      "dest": "backend/server.js"
+      "dest": "/index.html"
     }
   ]
 }
