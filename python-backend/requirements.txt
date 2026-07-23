@@ -9,5 +9,5 @@ google-auth==2.37.0
 razorpay==1.4.2
 httpx==0.28.1
 python-dotenv==1.0.1
-slowapi==0.1.9
+slowapi==0.1.10
 python-multipart==0.0.20
