@@ -9,7 +9,10 @@ yarn-error.log*
 .env.local
 .env.development
 .env.production
+.env.test
 backend/.env
+api/.env
+python-backend/.env
 
 # Vercel
 .vercel/
@@ -24,6 +27,8 @@ out/
 .DS_Store
 Thumbs.db
 desktop.ini
+*.swp
+*.swo
 
 # Editor
 .vscode/
@@ -37,13 +42,15 @@ desktop.ini
 logs/
 *.log
 
-# Temp scripts
+# Temp / raw / scratch files
 inject_design.js
+raw_*.html
+*.tmp
+*.bak
 
-# Vercel env files (contain secrets)
+# Vercel env files (contain secrets — NEVER commit)
 .env.vercel
 .env.vercel.prod
-raw_*.html
 
 # Python
 __pycache__/
@@ -52,8 +59,19 @@ __pycache__/
 *.pyd
 .Python
 *.egg-info/
-dist/
 *.egg
-.env
 python-backend/.env
 python-backend/public/
+api/__pycache__/
+api/**/__pycache__/
+.venv/
+venv/
+env/
+pip-log.txt
+
+# Non-code / accidental files
+plants-imgs/*.doc
+plants-imgs/*.docx
+plants-imgs/*.pdf
+plants-imgs/*.xls
+plants-imgs/*.xlsx

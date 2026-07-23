@@ -119,8 +119,7 @@ router.post('/forgot', async (req, res) => {
     if (!user) return res.json({ message: 'If that email is registered, a reset link has been sent.' });
 
     const resetToken = jwt.sign({ id: user._id?.toString() || user.id, type: 'reset' }, JWT_SECRET, { expiresIn: '1h' });
-    console.log(`[auth/forgot] Reset token for ${email}: ${resetToken}`);
-    // TODO: Send email via SendGrid/Nodemailer
+    // TODO: Send email via SendGrid/Nodemailer — token intentionally NOT logged for security
 
     res.json({ message: 'If that email is registered, a reset link has been sent.' });
   } catch (err) {
