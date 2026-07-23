@@ -1,0 +1,19 @@
+# CODEOWNERS
+# Each line defines a pattern and the owners responsible for code matching that pattern.
+# Owners are automatically requested for review when a PR modifies matching files.
+
+# Global fallback — all files
+* @KedarParab05
+
+# Python backend — requires security review
+/api/ @KedarParab05
+/python-backend/ @KedarParab05
+
+# Security-sensitive files — always require explicit review
+/api/middleware/ @KedarParab05
+/api/routers/auth.py @KedarParab05
+/.github/ @KedarParab05
+/vercel.json @KedarParab05
+/.gitignore @KedarParab05
+/requirements.txt @KedarParab05
+/api/requirements.txt @KedarParab05

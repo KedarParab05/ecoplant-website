@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /quiz.html
+Allow: /doctor.html
+
+# Block API endpoints from crawlers
+Disallow: /api/
+Disallow: /api/*
+
+# Block internal/admin paths
+Disallow: /.vercel/
+Disallow: /.env*
+
+Sitemap: https://ecoplant-pro.vercel.app/sitemap.xml

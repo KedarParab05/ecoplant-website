@@ -6,22 +6,12 @@
       "use": "@vercel/python",
       "config": { "maxLambdaSize": "150mb" }
     },
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.js",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.css",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "plants-imgs/**",
-      "use": "@vercel/static"
-    }
+    { "src": "*.html", "use": "@vercel/static" },
+    { "src": "*.js", "use": "@vercel/static" },
+    { "src": "*.css", "use": "@vercel/static" },
+    { "src": "*.txt", "use": "@vercel/static" },
+    { "src": "*.xml", "use": "@vercel/static" },
+    { "src": "plants-imgs/**", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/index.py" },
@@ -29,7 +19,9 @@
       "src": "/(.*\\.(?:js|css|avif|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot))",
       "dest": "/$1"
     },
-    { "src": "/quiz\\.html", "dest": "/quiz.html" },
+    { "src": "/robots\\.txt",  "dest": "/robots.txt" },
+    { "src": "/sitemap\\.xml", "dest": "/sitemap.xml" },
+    { "src": "/quiz\\.html",   "dest": "/quiz.html" },
     { "src": "/doctor\\.html", "dest": "/doctor.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
@@ -37,12 +29,27 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=(self)" },
-        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains; preload" }
+        { "key": "X-Content-Type-Options",        "value": "nosniff" },
+        { "key": "X-Frame-Options",               "value": "DENY" },
+        { "key": "X-XSS-Protection",              "value": "1; mode=block" },
+        { "key": "Referrer-Policy",               "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy",            "value": "camera=(), microphone=(), geolocation=(), payment=(self), usb=(), interest-cohort=(), browsing-topics=()" },
+        { "key": "Strict-Transport-Security",     "value": "max-age=63072000; includeSubDomains; preload" },
+        { "key": "Cross-Origin-Opener-Policy",    "value": "same-origin" },
+        { "key": "Cross-Origin-Resource-Policy",  "value": "same-origin" }
+      ]
+    },
+    {
+      "source": "/plants-imgs/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" },
+        { "key": "Cross-Origin-Resource-Policy", "value": "cross-origin" }
+      ]
+    },
+    {
+      "source": "/(.*\\.(?:js|css|woff|woff2|ttf|eot))",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     }
   ]

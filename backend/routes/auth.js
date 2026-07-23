@@ -11,9 +11,11 @@ const { requireAuth } = require('../middleware/auth');
 const { isConnected } = require('../db/mongoose');
 
 const router      = express.Router();
-const JWT_SECRET     = process.env.JWT_SECRET     || 'ecoplant_universal_dev_secret_2024';
-const DEFAULT_GOOGLE_CLIENT_ID = '676042745482-s2k2bpfcqktf62qm5bjtf27hnpap7hge.apps.googleusercontent.com';
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID;
+const JWT_SECRET     = process.env.JWT_SECRET || '';
+if (!JWT_SECRET && process.env.NODE_ENV === 'production') { console.error('[FATAL] JWT_SECRET not set'); process.exit(1); }
+const _JWT_SECRET = JWT_SECRET || 'dev-only-insecure-secret-set-JWT_SECRET-env';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+if (!GOOGLE_CLIENT_ID) console.warn('[auth] GOOGLE_CLIENT_ID not set — Google OAuth disabled');
 const SALT_ROUNDS = 12;
 const googleClient = new OAuth2Client();
 

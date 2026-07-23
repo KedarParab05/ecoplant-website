@@ -26,20 +26,24 @@ from middleware.auth import require_auth
 from middleware.security import record_failed_auth, clear_failed_auth, is_ip_locked
 from middleware.validators import validate_email, validate_password, validate_name
 
+import sys
+
+JWT_SECRET = os.getenv("JWT_SECRET", "dev-only-insecure-jwt-secret-set-JWT_SECRET-env")
+if os.getenv("JWT_SECRET", "") == "":
+    print("[WARNING] JWT_SECRET not set — using insecure dev default", file=sys.stderr)
+ALGORITHM = "HS256"
+JWT_EXPIRY_SECONDS = 7 * 24 * 3600   # 7 days
+
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+if not GOOGLE_CLIENT_ID:
+    print("[WARNING] GOOGLE_CLIENT_ID not set — Google OAuth will be disabled", file=sys.stderr)
+
+pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
+
 import uuid as uuid_lib
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
-JWT_SECRET = os.getenv("JWT_SECRET", "ecoplant_universal_dev_secret_2024")
-ALGORITHM = "HS256"
-JWT_EXPIRY_SECONDS = 7 * 24 * 3600   # 7 days (was 30 days)
-
-GOOGLE_CLIENT_ID = os.getenv(
-    "GOOGLE_CLIENT_ID",
-    "676042745482-s2k2bpfcqktf62qm5bjtf27hnpap7hge.apps.googleusercontent.com",
-)
-
-pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
 
 
 # ── Helpers ─────────────────────────────────────────────────────────────────────
