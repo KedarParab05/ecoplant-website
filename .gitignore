@@ -75,3 +75,5 @@ plants-imgs/*.docx
 plants-imgs/*.pdf
 plants-imgs/*.xls
 plants-imgs/*.xlsx
+
+.vercel
