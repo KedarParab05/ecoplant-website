@@ -1,6 +1,6 @@
-/**
- * server.js — EcoPlant Pro · Node.js Backend
- * ─────────────────────────────────────────────
+﻿/**
+ * server.js â€” EcoPlant Pro Â· Node.js Backend
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * Endpoints:
  *   POST /api/auth/signup
  *   POST /api/auth/signin
@@ -40,11 +40,11 @@ const rateLimit  = require('express-rate-limit');
 const path       = require('path');
 const multer     = require('multer');
 
-// ── MongoDB (connect before routes handle requests) ───────────────────────────
+// â”€â”€ MongoDB (connect before routes handle requests) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const { connect: connectMongo } = require('./db/mongoose');
 connectMongo(); // non-blocking; routes auto-fallback to JSON if not ready
 
-// ── Route imports ─────────────────────────────────────────────────────────────
+// â”€â”€ Route imports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const authRouter       = require('./routes/auth');
 const chatRouter       = require('./routes/chat');
 const doctorRouter     = require('./routes/doctor');
@@ -53,11 +53,12 @@ const newsletterRouter = require('./routes/newsletter');
 const reviewsRouter    = require('./routes/reviews');
 const plantsRouter     = require('./routes/plants');
 const plantDiagnoseRouter = require('./routes/plantDiagnose');
+const roomDesignRouter    = require('./routes/roomDesign');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
 
-// ── CORS ──────────────────────────────────────────────────────────────────────
+// â”€â”€ CORS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const allowedOrigins = new Set([
   process.env.FRONTEND_URL,
   'http://localhost:5000',
@@ -85,29 +86,29 @@ app.use(cors({
   credentials: true,
 }));
 
-// ── Body parsers ──────────────────────────────────────────────────────────────
-// Large limit for base64 image uploads (≈10 MB raw → ~14 MB base64)
+// â”€â”€ Body parsers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Large limit for base64 image uploads (â‰ˆ10 MB raw â†’ ~14 MB base64)
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
-// ── Rate limiting ─────────────────────────────────────────────────────────────
+// â”€â”€ Rate limiting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 min
   max:      200,
   standardHeaders: true,
   legacyHeaders:   false,
-  message: { error: 'Too many requests — please try again later.' },
+  message: { error: 'Too many requests â€” please try again later.' },
 });
 
 const aiLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 min
   max:      10,         // 10 AI calls/min per IP
-  message: { error: 'AI rate limit reached — please wait a moment.' },
+  message: { error: 'AI rate limit reached â€” please wait a moment.' },
 });
 
 app.use(generalLimiter);
 
-// ── Security headers ──────────────────────────────────────────────────────────
+// â”€â”€ Security headers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
@@ -115,7 +116,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ── Request logger (dev) ──────────────────────────────────────────────────────
+// â”€â”€ Request logger (dev) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if (process.env.NODE_ENV !== 'production') {
   app.use((req, _res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
@@ -123,7 +124,7 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// ── API routes ────────────────────────────────────────────────────────────────
+// â”€â”€ API routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.use('/api/auth',       authRouter);
 app.use('/api/chat',       aiLimiter, chatRouter);
 app.use('/api/doctor',     aiLimiter, doctorRouter);
@@ -132,8 +133,9 @@ app.use('/api/newsletter', newsletterRouter);
 app.use('/api/reviews',    reviewsRouter);
 app.use('/api/plants',     plantsRouter);
 app.use('/api/plant-diagnose', aiLimiter, plantDiagnoseRouter);
+app.use('/api/room-design',    aiLimiter, roomDesignRouter);
 
-// ── Health check ──────────────────────────────────────────────────────────────
+// â”€â”€ Health check â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.get('/api/health', (_req, res) => {
   const { isConnected } = require('./db/mongoose');
   res.json({
@@ -147,18 +149,18 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
-// ── Serve frontend static files ───────────────────────────────────────────────
-// public/ lives next to server.js — works in both dev and production
+// â”€â”€ Serve frontend static files â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// public/ lives next to server.js â€” works in both dev and production
 const publicDir = path.join(__dirname, 'public');
 if (require('fs').existsSync(publicDir)) {
   app.use(express.static(publicDir));
-  // SPA fallback — return index.html for all non-API routes
+  // SPA fallback â€” return index.html for all non-API routes
   app.get(/^(?!\/api).*/, (_req, res) => {
     res.sendFile(path.join(publicDir, 'index.html'));
   });
 }
 
-// ── 404 handler ───────────────────────────────────────────────────────────────
+// â”€â”€ 404 handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.use((req, res) => {
   res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
 });
@@ -175,17 +177,18 @@ app.use((err, req, res, _next) => {
   });
 });
 
-// ── Start server ──────────────────────────────────────────────────────────────
+// â”€â”€ Start server â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.listen(PORT, () => {
-  const ck = process.env.ANTHROPIC_API_KEY ? '✅' : '❌';
-  const gk = process.env.GEMINI_API_KEY    ? '✅' : '❌';
-  const rk = process.env.RAZORPAY_KEY_ID   ? '✅' : '❌';
-  console.log('\n┌──────────────────────────────────────────────────────┐');
-  console.log(`│  🌿 EcoPlant API running on port ${PORT}                 │`);
-  console.log(`│  📍 http://localhost:${PORT}/api/health                   │`);
-  console.log(`│  🤖 Claude  (Chat/Doctor): ${ck} ANTHROPIC_API_KEY      │`);
-  console.log(`│  💳 Razorpay (Payments):  ${rk} RAZORPAY_KEY_ID        │`);
-  console.log('└──────────────────────────────────────────────────────┘\n');
+  const ck = process.env.ANTHROPIC_API_KEY ? 'âœ…' : 'âŒ';
+  const gk = process.env.GEMINI_API_KEY    ? 'âœ…' : 'âŒ';
+  const rk = process.env.RAZORPAY_KEY_ID   ? 'âœ…' : 'âŒ';
+  console.log('\nâ”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”');
+  console.log(`â”‚  ðŸŒ¿ EcoPlant API running on port ${PORT}                 â”‚`);
+  console.log(`â”‚  ðŸ“ http://localhost:${PORT}/api/health                   â”‚`);
+  console.log(`â”‚  ðŸ¤– Claude  (Chat/Doctor): ${ck} ANTHROPIC_API_KEY      â”‚`);
+  console.log(`â”‚  ðŸ’³ Razorpay (Payments):  ${rk} RAZORPAY_KEY_ID        â”‚`);
+  console.log('â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜\n');
 });
 
 module.exports = app;
+

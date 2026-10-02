@@ -1,0 +1,621 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Room AI – EcoPlant Pro</title>
+  <meta name="description" content="Upload a photo of your room and let our AI place the perfect plants inside it. Powered by Google Gemini Vision.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0e1a0e; --ink2: #1c2d1c; --ink3: #2e4a2e;
+      --leaf: #3a7d44; --leaf2: #4e9e5a; --leaf3: #78c487; --leaf4: #c3efc9;
+      --sage: #8aaf8a; --sage2: #b3cbb3; --sage3: #d8e8d8; --sage4: #edf5ed;
+      --cream: #f5f0e8; --cream2: #ede7d8; --cream3: #faf7f2; --cream4: #fffef9;
+      --gold: #c9a84c; --gold2: #e8c96d;
+      --white: #fff; --red: #d94f4f;
+      --fd: 'Cormorant Garamond', serif;
+      --fb: 'DM Sans', sans-serif;
+      --r8: 8px; --r12: 12px; --r16: 16px; --r20: 20px; --r24: 24px; --rx: 999px;
+      --sh-md: 0 6px 24px rgba(14,26,14,.10);
+      --sh-lg: 0 16px 56px rgba(14,26,14,.14);
+      --transition: all .3s cubic-bezier(.4,0,.2,1);
+      --nav-h: 68px;
+    }
+    *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { font-family: var(--fb); background: var(--cream4); color: var(--ink); min-height: 100vh; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: rgba(255,254,249,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--sage3); z-index: 100; display: flex; align-items: center; padding: 0 clamp(16px,4vw,52px); gap: 24px; }
+    nav .logo { font-family: var(--fd); font-size: 22px; font-weight: 600; color: var(--leaf); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+    nav .logo-leaf { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; }
+    nav .logo-leaf img { width: 100%; height: 100%; object-fit: cover; }
+    nav .nav-links { display: flex; gap: 6px; margin-left: auto; }
+    nav .nav-links a { font-size: 14px; font-weight: 500; color: var(--ink3); text-decoration: none; padding: 6px 14px; border-radius: var(--rx); transition: var(--transition); }
+    nav .nav-links a:hover, nav .nav-links a.active { background: var(--sage4); color: var(--leaf); }
+    nav .nav-back { font-size: 13px; font-weight: 600; color: var(--leaf); text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 7px 16px; border: 1.5px solid var(--leaf3); border-radius: var(--rx); transition: var(--transition); }
+    nav .nav-back:hover { background: var(--sage4); }
+
+    /* HERO BANNER */
+    .hero-banner {
+      margin-top: var(--nav-h);
+      background: linear-gradient(135deg, #0e1a0e 0%, #1c3d1c 40%, #2e6b2e 80%, #3a7d44 100%);
+      padding: clamp(60px,8vw,100px) clamp(20px,5vw,80px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(120,196,135,.15) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 30%, rgba(201,168,76,.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-banner .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(120,196,135,.15); border: 1px solid rgba(120,196,135,.3);
+      border-radius: var(--rx); padding: 6px 16px;
+      font-size: 11.5px; font-weight: 600; color: var(--leaf3);
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: 24px;
+    }
+    .hero-banner h1 {
+      font-family: var(--fd); font-size: clamp(36px,6vw,72px); font-weight: 400;
+      color: #fff; line-height: 1.1; margin-bottom: 18px;
+    }
+    .hero-banner h1 em { font-style: italic; color: var(--leaf3); }
+    .hero-banner p { font-size: clamp(15px,2vw,18px); color: rgba(255,255,255,.7); max-width: 560px; margin: 0 auto 32px; line-height: 1.7; font-weight: 300; }
+    .hero-feats { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+    .hero-feat { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,.6); font-size: 13px; }
+    .hero-feat span { color: var(--leaf3); font-size: 18px; }
+
+    /* MAIN CONTENT */
+    .page-wrap { max-width: 1200px; margin: 0 auto; padding: clamp(32px,5vw,64px) clamp(16px,4vw,52px); }
+
+    /* UPLOAD CARD */
+    .upload-card {
+      background: var(--white); border-radius: var(--r24); box-shadow: var(--sh-lg);
+      padding: clamp(28px,4vw,52px); margin-bottom: 40px;
+    }
+    .upload-card h2 { font-family: var(--fd); font-size: clamp(22px,3vw,32px); color: var(--ink2); font-weight: 400; margin-bottom: 8px; }
+    .upload-card p { color: var(--sage); font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
+
+    .drop-zone {
+      border: 2.5px dashed var(--sage2); border-radius: var(--r20);
+      background: var(--cream4); padding: 56px 32px; text-align: center;
+      cursor: pointer; transition: var(--transition); position: relative;
+      overflow: hidden; min-height: 240px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px;
+    }
+    .drop-zone:hover, .drop-zone.drag { border-color: var(--leaf2); background: var(--sage4); }
+    .drop-zone.has-img { border-style: solid; border-color: var(--sage3); padding: 0; }
+    .drop-zone .dz-icon { font-size: 48px; line-height: 1; }
+    .drop-zone .dz-title { font-size: 16px; font-weight: 600; color: var(--ink2); }
+    .drop-zone .dz-sub { font-size: 12.5px; color: var(--sage2); }
+    .drop-zone img#room-preview { width: 100%; height: 100%; object-fit: contain; max-height: 440px; border-radius: var(--r16); display: none; }
+    .drop-zone .dz-change { position: absolute; bottom: 14px; right: 14px; background: rgba(14,26,14,.65); color: #fff; font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: var(--rx); backdrop-filter: blur(6px); display: none; }
+    input#room-file { display: none; }
+
+    .analyse-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; margin-top: 20px; padding: 16px 24px;
+      background: linear-gradient(135deg, var(--leaf), var(--leaf2));
+      color: #fff; font-size: 16px; font-weight: 600; font-family: var(--fb);
+      border: none; border-radius: var(--r16); cursor: pointer;
+      transition: var(--transition); box-shadow: 0 4px 20px rgba(58,125,68,.3);
+    }
+    .analyse-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(58,125,68,.4); }
+    .analyse-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .analyse-btn .spinner { width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* PROGRESS */
+    .progress-wrap { margin-top: 20px; display: none; }
+    .progress-steps { display: flex; gap: 0; margin-bottom: 16px; }
+    .progress-step { flex: 1; text-align: center; position: relative; }
+    .progress-step::after { content: ''; position: absolute; top: 14px; left: 50%; right: -50%; height: 2px; background: var(--sage3); z-index: 0; }
+    .progress-step:last-child::after { display: none; }
+    .ps-dot { width: 28px; height: 28px; border-radius: 50%; background: var(--sage3); border: 2px solid var(--sage2); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--sage); margin: 0 auto 8px; position: relative; z-index: 1; transition: var(--transition); }
+    .ps-label { font-size: 11.5px; color: var(--sage); font-weight: 500; }
+    .progress-step.active .ps-dot { background: var(--leaf); border-color: var(--leaf); color: #fff; box-shadow: 0 0 0 4px rgba(58,125,68,.2); }
+    .progress-step.active .ps-label { color: var(--leaf); font-weight: 600; }
+    .progress-step.done .ps-dot { background: var(--leaf2); border-color: var(--leaf2); color: #fff; }
+    .prog-bar-wrap { background: var(--sage3); border-radius: var(--rx); height: 4px; overflow: hidden; }
+    .prog-bar { height: 100%; background: linear-gradient(90deg, var(--leaf), var(--leaf2)); border-radius: var(--rx); transition: width .4s ease; width: 0; }
+    .prog-txt { font-size: 12.5px; color: var(--sage); margin-top: 8px; text-align: center; font-style: italic; }
+
+    /* RESULTS */
+    .results-section { display: none; }
+
+    /* Comparison viewer */
+    .comparison-wrap { position: relative; border-radius: var(--r20); overflow: hidden; box-shadow: var(--sh-lg); margin-bottom: 32px; background: #000; }
+    .comparison-label { position: absolute; top: 14px; padding: 5px 14px; background: rgba(0,0,0,.6); color: #fff; font-size: 12px; font-weight: 600; border-radius: var(--rx); backdrop-filter: blur(4px); z-index: 5; letter-spacing: .04em; }
+    .comparison-label.left { left: 14px; }
+    .comparison-label.right { right: 14px; }
+    .comparison-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .comparison-imgs img { width: 100%; height: 380px; object-fit: cover; display: block; }
+    .comparison-imgs.single img { height: 440px; }
+    .comparison-note { background: var(--sage4); border-radius: var(--r12); padding: 12px 16px; font-size: 13px; color: var(--ink3); display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+
+    /* Room meta */
+    .room-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+    .room-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--sage4); border: 1px solid var(--sage3); border-radius: var(--rx); padding: 6px 14px; font-size: 13px; color: var(--ink3); font-weight: 500; }
+
+    /* Plant placement cards */
+    .placements-title { font-family: var(--fd); font-size: clamp(22px,3vw,30px); color: var(--ink2); font-weight: 400; margin-bottom: 6px; }
+    .placements-sub { color: var(--sage); font-size: 14px; margin-bottom: 24px; }
+    .plant-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 32px; }
+    .plant-card {
+      background: var(--white); border-radius: var(--r20); box-shadow: var(--sh-md);
+      overflow: hidden; border: 1.5px solid var(--sage3); transition: var(--transition);
+      animation: cardIn .5s ease both;
+    }
+    @keyframes cardIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .plant-card:hover { transform: translateY(-4px); box-shadow: var(--sh-lg); border-color: var(--leaf3); }
+    .plant-card-header { background: linear-gradient(135deg, var(--sage4), var(--cream3)); padding: 20px 20px 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .plant-number { width: 32px; height: 32px; background: var(--leaf); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .plant-card-body { padding: 16px 20px 20px; }
+    .plant-name-main { font-family: var(--fd); font-size: 20px; color: var(--ink2); font-weight: 600; line-height: 1.2; }
+    .plant-sci { font-size: 12px; color: var(--sage); font-style: italic; margin-bottom: 10px; }
+    .plant-location { font-size: 13px; color: var(--ink3); background: var(--cream3); border-radius: var(--r8); padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+    .plant-reason { font-size: 13px; color: var(--ink3); line-height: 1.6; margin-bottom: 16px; }
+    .plant-meta-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .plant-pill { font-size: 11.5px; font-weight: 600; padding: 4px 10px; border-radius: var(--rx); }
+    .pill-care-easy { background: #dcfce7; color: #16a34a; }
+    .pill-care-very-easy { background: #d1fae5; color: #059669; }
+    .pill-care-moderate { background: #fef9c3; color: #ca8a04; }
+    .pill-care-demanding { background: #fee2e2; color: #dc2626; }
+    .pill-pot { background: var(--sage4); color: var(--ink3); }
+    .plant-price { font-size: 14px; font-weight: 700; color: var(--leaf); margin-bottom: 14px; }
+    .plant-shop-btn { width: 100%; padding: 10px; background: var(--leaf); color: #fff; font-size: 13px; font-weight: 600; border: none; border-radius: var(--r12); cursor: pointer; transition: var(--transition); font-family: var(--fb); }
+    .plant-shop-btn:hover { background: var(--leaf2); }
+
+    /* Overall tip */
+    .overall-tip { background: linear-gradient(135deg, var(--sage4), var(--cream3)); border: 1.5px solid var(--sage3); border-radius: var(--r20); padding: 24px 28px; display: flex; gap: 16px; align-items: flex-start; margin-bottom: 32px; }
+    .tip-icon { font-size: 28px; flex-shrink: 0; }
+    .tip-content h4 { font-family: var(--fd); font-size: 18px; color: var(--ink2); font-weight: 600; margin-bottom: 6px; }
+    .tip-content p { font-size: 14px; color: var(--ink3); line-height: 1.6; }
+
+    /* Reset button */
+    .reset-btn { display: flex; align-items: center; gap: 8px; background: transparent; border: 1.5px solid var(--sage2); border-radius: var(--r12); padding: 12px 24px; font-size: 14px; font-weight: 600; color: var(--ink3); cursor: pointer; transition: var(--transition); font-family: var(--fb); }
+    .reset-btn:hover { border-color: var(--leaf2); color: var(--leaf); background: var(--sage4); }
+
+    /* HOW IT WORKS */
+    .how-section { background: var(--white); border-radius: var(--r24); box-shadow: var(--sh-md); padding: clamp(28px,4vw,48px); margin-bottom: 40px; }
+    .how-section h2 { font-family: var(--fd); font-size: clamp(22px,3vw,32px); color: var(--ink2); font-weight: 400; margin-bottom: 28px; text-align: center; }
+    .how-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
+    .how-step { text-align: center; }
+    .how-step-num { width: 52px; height: 52px; background: linear-gradient(135deg, var(--leaf), var(--leaf2)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 14px; box-shadow: 0 4px 16px rgba(58,125,68,.25); }
+    .how-step h3 { font-size: 15px; font-weight: 600; color: var(--ink2); margin-bottom: 6px; }
+    .how-step p { font-size: 13px; color: var(--sage); line-height: 1.6; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 28px; right: 28px; background: var(--ink2); color: #fff; padding: 14px 20px; border-radius: var(--r16); font-size: 14px; display: flex; align-items: center; gap: 10px; transform: translateY(80px); opacity: 0; transition: var(--transition); z-index: 999; box-shadow: var(--sh-lg); max-width: 320px; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-icon { font-size: 20px; }
+
+    /* ERROR STATE */
+    .error-card { background: #fff5f5; border: 1.5px solid #fecaca; border-radius: var(--r16); padding: 20px 24px; display: flex; gap: 14px; align-items: flex-start; margin-top: 16px; display: none; }
+    .error-card .err-icon { font-size: 24px; }
+    .error-card h4 { font-size: 15px; font-weight: 600; color: #dc2626; margin-bottom: 4px; }
+    .error-card p { font-size: 13px; color: #991b1b; line-height: 1.5; }
+
+    /* FOOTER */
+    footer { text-align: center; padding: 32px; font-size: 13px; color: var(--sage2); border-top: 1px solid var(--sage3); margin-top: 24px; }
+    footer a { color: var(--leaf2); text-decoration: none; }
+
+    @media (max-width: 640px) {
+      .comparison-imgs { grid-template-columns: 1fr; }
+      .comparison-imgs img { height: 220px; }
+      .progress-steps { gap: 0; }
+      .ps-label { font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-leaf"><img src="https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=200&q=80" alt=""></div>
+    EcoPlant
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="index.html#plants">Shop</a>
+    <a href="doctor.html">Plant Doctor</a>
+    <a href="room-design.html" class="active">Room Design AI</a>
+  </div>
+  <a href="index.html" class="nav-back" style="margin-left:auto">&#8592; Back to Shop</a>
+</nav>
+
+<!-- HERO BANNER -->
+<div class="hero-banner">
+  <div class="badge"><span>&#127981;</span> Powered by Google Gemini Vision AI</div>
+  <h1>Design your room<br>with the <em>perfect plants.</em></h1>
+  <p>Upload a photo of any room. Our AI analyses the space, lighting, and style — then recommends and visualises the ideal plants placed right inside your room.</p>
+  <div class="hero-feats">
+    <div class="hero-feat"><span>&#128065;</span> Real AI vision analysis</div>
+    <div class="hero-feat"><span>&#127807;</span> 500+ plant species</div>
+    <div class="hero-feat"><span>&#9728;</span> Light & style matching</div>
+    <div class="hero-feat"><span>&#128293;</span> Instant results</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="page-wrap">
+
+  <!-- HOW IT WORKS -->
+  <div class="how-section">
+    <h2>How it works</h2>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-step-num">&#128247;</div>
+        <h3>Upload your room</h3>
+        <p>Take or upload a photo of any room — living room, bedroom, balcony, or office.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">&#129504;</div>
+        <h3>AI analyses space</h3>
+        <p>Gemini Vision reads your room's lighting, style, colours, and available spaces.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">&#127807;</div>
+        <h3>Plants recommended</h3>
+        <p>Get 2–3 perfectly matched plants with exact placement suggestions and why they'll thrive.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">&#128722;</div>
+        <h3>Shop &amp; transform</h3>
+        <p>Order directly from the recommendations and transform your space in days.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD CARD -->
+  <div class="upload-card">
+    <h2>Upload your room photo</h2>
+    <p>Works best with well-lit photos. Accepted formats: JPG, PNG, WEBP — up to 10 MB.</p>
+
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('room-file').click()"
+         ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+      <div class="dz-icon" id="dz-icon">&#127968;</div>
+      <div class="dz-title" id="dz-title">Click to upload or drag &amp; drop</div>
+      <div class="dz-sub" id="dz-sub">JPG, PNG, WEBP &mdash; up to 10 MB</div>
+      <img id="room-preview" src="" alt="Room preview">
+      <div class="dz-change" id="dz-change">&#9998; Change photo</div>
+    </div>
+    <input type="file" id="room-file" accept="image/jpeg,image/png,image/webp" onchange="onFileSelect(event)">
+
+    <button class="analyse-btn" id="analyse-btn" onclick="analyseRoom()" disabled>
+      <div class="spinner" id="btn-spinner"></div>
+      <span id="btn-text">&#127981; Analyse My Room</span>
+    </button>
+
+    <!-- Progress -->
+    <div class="progress-wrap" id="progress-wrap">
+      <div class="progress-steps">
+        <div class="progress-step" id="ps1">
+          <div class="ps-dot">1</div>
+          <div class="ps-label">Reading image</div>
+        </div>
+        <div class="progress-step" id="ps2">
+          <div class="ps-dot">2</div>
+          <div class="ps-label">AI analyses room</div>
+        </div>
+        <div class="progress-step" id="ps3">
+          <div class="ps-dot">3</div>
+          <div class="ps-label">Picking plants</div>
+        </div>
+        <div class="progress-step" id="ps4">
+          <div class="ps-dot">4</div>
+          <div class="ps-label">Generating result</div>
+        </div>
+      </div>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+      <div class="prog-txt" id="prog-txt">Uploading image...</div>
+    </div>
+
+    <!-- Error -->
+    <div class="error-card" id="error-card">
+      <div class="err-icon">&#9888;</div>
+      <div>
+        <h4>Something went wrong</h4>
+        <p id="error-msg">Please try again with a different room photo.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-section" id="results-section">
+
+    <!-- Image comparison -->
+    <div class="comparison-wrap" id="comparison-wrap">
+      <div class="comparison-label left">&#128247; Your Room</div>
+      <div class="comparison-label right" id="right-label">&#127807; AI Recommendations</div>
+      <div class="comparison-imgs" id="comparison-imgs">
+        <img id="orig-img" src="" alt="Original room">
+        <img id="rendered-img" src="" alt="Room with plants">
+      </div>
+    </div>
+    <div class="comparison-note" id="comparison-note">
+      <span>&#128161;</span>
+      <span id="comparison-note-txt">Plant positions are AI suggestions — overlay view shows recommended placement zones on your original photo.</span>
+    </div>
+
+    <!-- Room meta tags -->
+    <div class="room-meta" id="room-meta"></div>
+
+    <!-- Overall tip -->
+    <div class="overall-tip" id="overall-tip">
+      <div class="tip-icon">&#127807;</div>
+      <div class="tip-content">
+        <h4>Designer's Tip</h4>
+        <p id="tip-text"></p>
+      </div>
+    </div>
+
+    <!-- Plant placement cards -->
+    <div class="placements-title">Recommended Plants for Your Space</div>
+    <div class="placements-sub" id="placements-sub"></div>
+    <div class="plant-cards" id="plant-cards"></div>
+
+    <!-- Reset -->
+    <button class="reset-btn" id="reset-btn" onclick="resetAll()">
+      &#8592; Try Another Room
+    </button>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toast-icon"></div>
+  <div id="toast-msg"></div>
+</div>
+
+<footer>
+  <p>&#127807; EcoPlant Pro &mdash; <a href="index.html">Back to Shop</a> &nbsp;|&nbsp; <a href="doctor.html">Plant Doctor</a></p>
+</footer>
+
+<script>
+  // ── Config ────────────────────────────────────────────────────────────────
+  const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? `${window.location.protocol}//${window.location.hostname}:5000`
+    : '';
+
+  let currentFile = null;
+  let busy = false;
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function $(id) { return document.getElementById(id); }
+
+  function showToast(icon, msg, duration = 3500) {
+    $('toast-icon').textContent = icon;
+    $('toast-msg').textContent = msg;
+    $('toast').classList.add('show');
+    setTimeout(() => $('toast').classList.remove('show'), duration);
+  }
+
+  function setProgress(step, pct, txt) {
+    for (let i = 1; i <= 4; i++) {
+      const el = $(`ps${i}`);
+      el.classList.remove('active', 'done');
+      if (i < step) el.classList.add('done');
+      if (i === step) el.classList.add('active');
+    }
+    $('prog-bar').style.width = pct + '%';
+    $('prog-txt').textContent = txt;
+  }
+
+  function showError(msg) {
+    $('error-card').style.display = 'flex';
+    $('error-msg').textContent = msg;
+  }
+
+  function hideError() { $('error-card').style.display = 'none'; }
+
+  // ── File handling ─────────────────────────────────────────────────────────
+  function onDragOver(e) { e.preventDefault(); $('drop-zone').classList.add('drag'); }
+  function onDragLeave() { $('drop-zone').classList.remove('drag'); }
+  function onDrop(e) {
+    e.preventDefault();
+    $('drop-zone').classList.remove('drag');
+    const f = e.dataTransfer?.files?.[0];
+    if (f && f.type.startsWith('image/')) loadFile(f);
+  }
+  function onFileSelect(e) {
+    const f = e.target.files?.[0];
+    if (f) loadFile(f);
+  }
+
+  function loadFile(file) {
+    if (file.size > 10_500_000) { showToast('⚠️', 'File too large — max 10 MB'); return; }
+    currentFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const preview = $('room-preview');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      $('dz-icon').style.display = 'none';
+      $('dz-title').style.display = 'none';
+      $('dz-sub').style.display = 'none';
+      $('dz-change').style.display = 'block';
+      $('drop-zone').classList.add('has-img');
+      $('analyse-btn').disabled = false;
+      hideError();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Core: analyse room ────────────────────────────────────────────────────
+  async function analyseRoom() {
+    if (!currentFile || busy) return;
+    busy = true;
+
+    // Reset UI
+    hideError();
+    $('results-section').style.display = 'none';
+    $('progress-wrap').style.display = 'block';
+    $('analyse-btn').disabled = true;
+    $('btn-spinner').style.display = 'block';
+    $('btn-text').textContent = 'Analysing...';
+
+    try {
+      // Step 1 – read file as base64
+      setProgress(1, 15, 'Reading image...');
+      const b64 = await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result.split(',')[1]);
+        r.onerror = reject;
+        r.readAsDataURL(currentFile);
+      });
+
+      // Step 2 – send to Gemini Vision
+      setProgress(2, 35, 'AI is analysing your room lighting and style...');
+      await new Promise(r => setTimeout(r, 600));
+
+      setProgress(3, 65, 'Matching plants to your space...');
+
+      const resp = await fetch(`${API}/api/room-design`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: b64, mimeType: currentFile.type }),
+      });
+
+      setProgress(4, 90, 'Building your personalised recommendations...');
+      await new Promise(r => setTimeout(r, 400));
+
+      if (!resp.ok) {
+        const errJson = await resp.json().catch(() => ({}));
+        throw new Error(errJson.error || `Server error: ${resp.status}`);
+      }
+
+      const data = await resp.json();
+      if (!data.success || !data.analysis) throw new Error('Invalid response from AI');
+
+      setProgress(4, 100, 'Done!');
+      await new Promise(r => setTimeout(r, 500));
+
+      $('progress-wrap').style.display = 'none';
+      renderResults(data);
+      showToast('🌿', 'Room analysis complete!');
+
+    } catch (err) {
+      console.error('[room-design]', err);
+      $('progress-wrap').style.display = 'none';
+      showError(err.message || 'Failed to analyse room. Please try again.');
+      showToast('⚠️', 'Analysis failed', 4000);
+    } finally {
+      busy = false;
+      $('analyse-btn').disabled = false;
+      $('btn-spinner').style.display = 'none';
+      $('btn-text').textContent = '🌱 Analyse My Room';
+    }
+  }
+
+  // ── Render results ────────────────────────────────────────────────────────
+  function renderResults(data) {
+    const { analysis, renderedImage } = data;
+    const originalSrc = $('room-preview').src;
+
+    // ── Image comparison ──
+    $('orig-img').src = originalSrc;
+
+    if (renderedImage) {
+      $('rendered-img').src = renderedImage;
+      $('rendered-img').style.display = 'block';
+      $('comparison-imgs').classList.remove('single');
+      $('right-label').textContent = '🌿 With AI Plants';
+      $('comparison-note-txt').textContent = 'Left: your original room. Right: Imagen AI has placed the recommended plants inside your space.';
+    } else {
+      // No Imagen — show original with overlay dots
+      $('rendered-img').style.display = 'none';
+      $('comparison-imgs').classList.add('single');
+      $('right-label').style.display = 'none';
+      $('orig-img').style.gridColumn = '1/-1';
+      $('comparison-note-txt').textContent = '💡 AI has analysed your room and placed virtual plant markers. Connect Vertex AI for photorealistic plant rendering.';
+    }
+
+    // ── Room tags ──
+    const metaEl = $('room-meta');
+    const tags = [
+      { icon: '🏠', label: analysis.roomType || 'Room' },
+      { icon: '☀️', label: analysis.lightLevel || 'Mixed light' },
+      { icon: '🎨', label: analysis.style || 'Contemporary' },
+    ];
+    if (analysis.colorPalette?.length) {
+      tags.push({ icon: '🎨', label: analysis.colorPalette.slice(0,2).join(', ') });
+    }
+    metaEl.innerHTML = tags.map(t => `<div class="room-tag"><span>${t.icon}</span>${t.label}</div>`).join('');
+
+    // ── Overall tip ──
+    $('tip-text').textContent = analysis.overall_tip || '';
+
+    // ── Placement sub ──
+    $('placements-sub').textContent = `${analysis.placements?.length || 0} plants selected to perfectly match your ${analysis.roomType || 'room'}'s ${analysis.style || 'style'} and ${analysis.lightLevel || 'light'} conditions.`;
+
+    // ── Plant cards ──
+    const cardsEl = $('plant-cards');
+    cardsEl.innerHTML = (analysis.placements || []).map((p, i) => {
+      const careClass = {
+        'very easy': 'pill-care-very-easy',
+        'easy': 'pill-care-easy',
+        'moderate': 'pill-care-moderate',
+        'demanding': 'pill-care-demanding',
+      }[p.care_level?.toLowerCase()] || 'pill-care-easy';
+
+      return `
+      <div class="plant-card" style="animation-delay:${i * 0.12}s">
+        <div class="plant-card-header">
+          <div>
+            <div class="plant-name-main">${p.plant_name}</div>
+            <div class="plant-sci">${p.scientific_name || ''}</div>
+          </div>
+          <div class="plant-number">${i + 1}</div>
+        </div>
+        <div class="plant-card-body">
+          <div class="plant-location">📍 ${p.location_description}</div>
+          <div class="plant-reason">${p.reason}</div>
+          <div class="plant-meta-row">
+            <span class="plant-pill ${careClass}">${p.care_level} care</span>
+            <span class="plant-pill pill-pot">🪴 ${p.pot_style}</span>
+          </div>
+          <div class="plant-price">${p.price_range || 'Rs. 399+'}</div>
+          <button class="plant-shop-btn" onclick="shopPlant('${p.plant_name}')">🛒 Shop This Plant</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    $('results-section').style.display = 'block';
+    $('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function shopPlant(name) {
+    window.location.href = `index.html#plants`;
+    showToast('🛒', `Searching for ${name}...`);
+  }
+
+  function resetAll() {
+    currentFile = null;
+    $('room-preview').style.display = 'none';
+    $('room-preview').src = '';
+    $('dz-icon').style.display = '';
+    $('dz-title').style.display = '';
+    $('dz-sub').style.display = '';
+    $('dz-change').style.display = 'none';
+    $('drop-zone').classList.remove('has-img');
+    $('analyse-btn').disabled = true;
+    $('btn-text').textContent = '🌱 Analyse My Room';
+    $('results-section').style.display = 'none';
+    $('progress-wrap').style.display = 'none';
+    $('prog-bar').style.width = '0';
+    $('room-file').value = '';
+    hideError();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>

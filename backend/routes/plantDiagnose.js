@@ -1,125 +1,82 @@
+﻿/**
+ * routes/plantDiagnose.js - AI Plant Diagnosis via Gemini Vision
+ * POST /api/plant-diagnose  { image: base64string }
+ * Delegates to /api/doctor pattern using Gemini 2.0 Flash Vision
+ * No mock data - real AI results only.
+ */
+
 const express = require('express');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const router = express.Router();
-const { detectPlantDisease } = require('../services/roboflowService');
+
+let genAI = null;
+function getClient() {
+  if (!genAI && process.env.GEMINI_API_KEY) {
+    genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  }
+  return genAI;
+}
+
+const DOCTOR_PROMPT = `You are an expert botanist and plant pathologist with 20+ years of experience.
+Analyse this plant image and return ONLY valid JSON (no markdown, no code blocks):
+
+{
+  "plantName": "Common plant name",
+  "scientificName": "Genus species",
+  "confidence": 87,
+  "healthStatus": "Healthy",
+  "healthScore": 87,
+  "healthDotClass": "ok",
+  "diagnosis": "Precise 1-2 sentence diagnosis based on what you actually see.",
+  "issues": ["Issue 1 if any"],
+  "treatments": [
+    "Specific actionable step 1",
+    "Specific actionable step 2",
+    "Specific actionable step 3"
+  ]
+}
+
+Rules:
+- healthDotClass: exactly "ok" (80-100), "warn" (40-79), or "bad" (0-39)
+- healthScore: integer 0-100 reflecting actual observed health
+- confidence: integer 0-100 for species identification confidence
+- issues: empty array [] if plant is healthy
+- treatments: 2-4 precise, actionable steps specific to what you observe
+- If image does not show a plant: plantName "No plant detected", healthStatus "Unknown", healthScore 0`;
+
+function parseJSON(raw) {
+  return JSON.parse(raw.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/, '').trim());
+}
 
 router.post('/', async (req, res) => {
   try {
     const { image } = req.body;
-    if (!image) return res.status(400).json({ error: 'Image base64 is required.' });
+    if (!image) return res.status(400).json({ error: 'image (base64) is required' });
+    if (image.length > 14_000_000) return res.status(413).json({ error: 'Image too large. Max 10 MB.' });
 
-    const roboflowResult = await detectPlantDisease(image).catch(() => ({ predictions: [] }));
-    let predictions = roboflowResult.predictions || [];
+    const client = getClient();
+    if (!client) return res.status(503).json({ error: 'AI not configured - add GEMINI_API_KEY to .env' });
 
-    // --- MOCK FALLBACK FOR REALISTIC UX ---
-    if (predictions.length === 0) {
-      const mocks = [
-        {
-          plantName: "Monstera Deliciosa",
-          scientificName: "Monstera deliciosa",
-          healthStatus: "Needs Attention",
-          healthScore: 68,
-          healthDotClass: "warn",
-          diagnosis: "The specimen shows classic signs of 'Leaf Tip Burn' and slight chlorosis on lower foliage. This is often indicative of inconsistent humidity levels or tap water mineral buildup.",
-          issues: ["Browning Leaf Tips", "Slight Overwatering", "Low Humidity"],
-          treatments: [
-            "Trim the brown edges with sterilized shears.",
-            "Switch to filtered or distilled water to avoid fluoride buildup.",
-            "Increase local humidity using a pebble tray or humidifier.",
-            "Ensure the top 2 inches of soil are dry before watering again."
-          ]
-        },
-        {
-          plantName: "Snake Plant",
-          scientificName: "Dracaena trifasciata",
-          healthStatus: "Healthy",
-          healthScore: 92,
-          healthDotClass: "ok",
-          diagnosis: "Overall health is excellent. Strong turgor pressure in leaves and good coloration. Minor mechanical damage on one leaf edge, likely due to physical contact.",
-          issues: ["Minor Mechanical Damage"],
-          treatments: [
-            "No immediate action required.",
-            "Wipe leaves with a damp cloth to remove dust and improve photosynthesis.",
-            "Rotate 90 degrees every month for even growth."
-          ]
-        },
-        {
-          plantName: "Fiddle Leaf Fig",
-          scientificName: "Ficus lyrata",
-          healthStatus: "Critical",
-          healthScore: 35,
-          healthDotClass: "bad",
-          diagnosis: "Significant 'Edema' detected alongside early-stage root stress. The dark red/brown spots on new growth suggest a serious moisture imbalance in the root zone.",
-          issues: ["Root Rot Warning", "Severe Edema", "Light Deprivation"],
-          treatments: [
-            "Immediately stop watering for at least 14 days.",
-            "Move to a location with 6+ hours of bright, indirect light.",
-            "Check roots for mushiness; repot in well-draining soil if necessary.",
-            "Prune severely damaged leaves to conserve energy."
-          ]
-        },
-        {
-          plantName: "Peace Lily",
-          scientificName: "Spathiphyllum",
-          healthStatus: "Dehydrated",
-          healthScore: 45,
-          healthDotClass: "warn",
-          diagnosis: "Severe drooping (epinasty) detected. The plant is likely in a state of 'Temporary Wilting Point' due to underwatering or excessive heat exposure.",
-          issues: ["Severe Dehydration", "Heat Stress"],
-          treatments: [
-            "Give the plant a thorough bottom-watering soak for 20 minutes.",
-            "Move away from direct heat sources or drafty windows.",
-            "Mist leaves to provide temporary relief while roots recover."
-          ]
-        }
-      ];
-      const mock = mocks[Math.floor(Math.random() * mocks.length)];
-      return res.json({ result: mock });
+    const model = client.getGenerativeModel({ model: 'gemini-3.8-flash' });
+    const result = await model.generateContent([
+      { inlineData: { data: image, mimeType: 'image/jpeg' } },
+      { text: DOCTOR_PROMPT },
+    ]);
+
+    const raw = result.response.text();
+    let parsed;
+    try { parsed = parseJSON(raw); }
+    catch (e) { return res.status(500).json({ error: 'Failed to parse AI response', raw }); }
+
+    return res.json({ result: parsed });
+  } catch (err) {
+    console.error('[plant-diagnose]', err.message);
+    if (err.status === 429 || err.message?.includes('quota')) {
+      return res.status(429).json({ error: 'AI quota reached. Please try again shortly.' });
     }
-    // --- END MOCK FALLBACK ---
-
-    // Map Roboflow directly to Frontend Format
-    let plantName = "Unknown Plant";
-    let issues = [];
-    let healthScore = 95;
-    let maxConfidence = 0;
-
-    predictions.forEach(p => {
-      if (p.confidence > maxConfidence) {
-        maxConfidence = p.confidence;
-        // Roboflow classes usually come as strings
-        if (!p.class.toLowerCase().includes("healthy")) {
-           issues.push(p.class);
-        } else {
-           plantName = p.class; // Or if the model is just a plant classifier
-        }
-      }
-    });
-
-    issues = [...new Set(issues)];
-    if (issues.length > 0) {
-      healthScore = Math.max(10, 100 - (issues.length * 20));
-    }
-
-    const finalReport = {
-      plantName: plantName !== "Unknown Plant" ? plantName : (predictions.length > 0 ? predictions[0].class : "Houseplant"),
-      healthStatus: issues.length > 0 ? "Needs Attention" : "Healthy",
-      healthScore: healthScore,
-      healthDotClass: issues.length > 0 ? "warn" : "ok",
-      diagnosis: issues.length > 0 
-        ? `Detected signs of ${issues.join(', ')} with ${Math.round(maxConfidence * 100)}% confidence.` 
-        : `No major diseases detected. Confidence: ${Math.round((maxConfidence || 0.8) * 100)}%`,
-      issues: issues,
-      treatments: issues.length > 0 
-        ? ["Isolate the plant immediately.", "Adjust watering schedule.", "Apply appropriate fungicide/pesticide if symptoms worsen."]
-        : ["Continue current care routine.", "Ensure adequate sunlight."],
-      roboflowPredictions: predictions
-    };
-
-    return res.json({ result: finalReport });
-  } catch (error) {
-    console.error('Plant Diagnose Error:', error);
-    return res.status(500).json({ error: error.message || 'Failed to process plant image.' });
+    res.status(500).json({ error: err.message });
   }
 });
 
 module.exports = router;
+

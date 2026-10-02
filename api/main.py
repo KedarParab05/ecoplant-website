@@ -1,15 +1,15 @@
-"""
-main.py — EcoPlant Pro · Python/FastAPI Backend (Security Hardened)
-────────────────────────────────────────────────────────────────────
+﻿"""
+main.py â€” EcoPlant Pro Â· Python/FastAPI Backend (Security Hardened)
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Security layers:
-  1. SecurityMiddleware   — XSS/NoSQL injection, security headers, CSP, HSTS
-  2. CORSMiddleware       — strict origin allowlist
-  3. SlowAPI              — tiered rate limiting (general + per-endpoint)
-  4. JWT auth middleware  — Bearer token verification
-  5. Input validators     — email/password/name/ID validators
-  6. Brute-force lockout  — per-IP failed-auth tracking
-  7. Request size limits  — 15 MB max body
-  8. Hidden error details — no stack traces in production
+  1. SecurityMiddleware   â€” XSS/NoSQL injection, security headers, CSP, HSTS
+  2. CORSMiddleware       â€” strict origin allowlist
+  3. SlowAPI              â€” tiered rate limiting (general + per-endpoint)
+  4. JWT auth middleware  â€” Bearer token verification
+  5. Input validators     â€” email/password/name/ID validators
+  6. Brute-force lockout  â€” per-IP failed-auth tracking
+  7. Request size limits  â€” 15 MB max body
+  8. Hidden error details â€” no stack traces in production
 """
 
 import os
@@ -30,14 +30,14 @@ load_dotenv()
 
 from db.database import connect
 from middleware.security import SecurityMiddleware
-from routers import auth, chat, doctor, orders, newsletter, reviews, plants, plant_diagnose
+from routers import auth, chat, doctor, orders, newsletter, reviews, plants, plant_diagnose, room_design
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ecoplant")
 
 IS_PROD = os.getenv("VERCEL") == "1" or os.getenv("ENV", "").lower() == "production"
 
-# ── Rate limiter ───────────────────────────────────────────────────────────────
+# â”€â”€ Rate limiter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 limiter = Limiter(key_func=get_remote_address, default_limits=["200/15minutes"])
 
 
@@ -60,10 +60,10 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# ── Security middleware (runs first — innermost layer) ────────────────────────
+# â”€â”€ Security middleware (runs first â€” innermost layer) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.add_middleware(SecurityMiddleware)
 
-# ── CORS — strict origin allowlist ────────────────────────────────────────────
+# â”€â”€ CORS â€” strict origin allowlist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 ALLOWED_ORIGINS = list(filter(None, [
     "https://ecoplant-pro.vercel.app",
     os.getenv("FRONTEND_URL", ""),
@@ -87,14 +87,14 @@ app.add_middleware(
     max_age=600,
 )
 
-# ── Global validation error handler ──────────────────────────────────────────
+# â”€â”€ Global validation error handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     errors = [{"field": ".".join(str(l) for l in e["loc"]), "msg": e["msg"]} for e in exc.errors()]
     return JSONResponse(status_code=422, content={"error": "Validation failed", "details": errors})
 
 
-# ── Global 500 handler (hide internals in production) ─────────────────────────
+# â”€â”€ Global 500 handler (hide internals in production) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"[unhandled] {request.method} {request.url.path}: {exc}", exc_info=True)
@@ -102,16 +102,16 @@ async def global_exception_handler(request: Request, exc: Exception):
     return JSONResponse(status_code=500, content={"error": detail})
 
 
-# ── Request logger (dev only) ─────────────────────────────────────────────────
+# â”€â”€ Request logger (dev only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if not IS_PROD:
     @app.middleware("http")
     async def request_logger(request: Request, call_next):
         from datetime import datetime
         response = await call_next(request)
-        logger.info(f"{request.method} {request.url.path} → {response.status_code}")
+        logger.info(f"{request.method} {request.url.path} â†’ {response.status_code}")
         return response
 
-# ── API routers with per-router rate limits ───────────────────────────────────
+# â”€â”€ API routers with per-router rate limits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 app.include_router(auth.router)            # auth: brute-force handled in route
 app.include_router(chat.router)            # AI: 10/min via slowapi in router
 app.include_router(doctor.router)          # AI: 10/min
@@ -120,8 +120,9 @@ app.include_router(newsletter.router)
 app.include_router(reviews.router)
 app.include_router(plants.router)
 app.include_router(plant_diagnose.router)  # AI: 10/min
+app.include_router(room_design.router)     # AI: 10/min
 
-# ── Health check ──────────────────────────────────────────────────────────────
+# â”€â”€ Health check â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 @app.get("/api/health")
 async def health():
     from db.database import is_connected
@@ -138,7 +139,7 @@ async def health():
     }
 
 
-# ── Static files + SPA fallback ───────────────────────────────────────────────
+# â”€â”€ Static files + SPA fallback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 PUBLIC_DIR = os.path.join(os.path.dirname(__file__), "public")
 if os.path.isdir(PUBLIC_DIR):
     plants_img_dir = os.path.join(PUBLIC_DIR, "plants-imgs")
@@ -162,3 +163,4 @@ if os.path.isdir(PUBLIC_DIR):
         if os.path.isfile(index):
             return FileResponse(index)
         return JSONResponse({"error": "Not found"}, status_code=404)
+

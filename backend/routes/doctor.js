@@ -1,5 +1,5 @@
-/**
- * routes/doctor.js — AI Plant Doctor (image analysis via Google Gemini)
+﻿/**
+ * routes/doctor.js â€” AI Plant Doctor (image analysis via Google Gemini)
  * POST /api/doctor  { image: base64string, mimeType: "image/jpeg" }
  */
 
@@ -44,13 +44,13 @@ Rules:
 - treatments should always have 2-4 practical, actionable steps
 - If the image doesn't show a plant, set plantName to "No plant detected" and healthStatus to "Unknown"`;
 
-// ── JSON parse helper (strips markdown fences if present) ─────────────────────
+// â”€â”€ JSON parse helper (strips markdown fences if present) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function parseJSON(raw) {
   const cleaned = raw.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/,'').trim();
   return JSON.parse(cleaned);
 }
 
-// ── POST /api/doctor ───────────────────────────────────────────────────────────
+// â”€â”€ POST /api/doctor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post('/', async (req, res) => {
   try {
     const { image, mimeType } = req.body;
@@ -63,18 +63,18 @@ router.post('/', async (req, res) => {
     const allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
     const mime = allowedMimes.includes(mimeType) ? mimeType : 'image/jpeg';
 
-    // Validate image size (max ~10 MB base64 ≈ ~7.5 MB raw)
+    // Validate image size (max ~10 MB base64 â‰ˆ ~7.5 MB raw)
     if (image.length > 14_000_000) {
       return res.status(413).json({ error: 'Image too large. Maximum size is 10 MB.' });
     }
 
     const client = getClient();
     if (!client) {
-      return res.status(503).json({ error: 'AI service not configured — add GEMINI_API_KEY to .env' });
+      return res.status(503).json({ error: 'AI service not configured â€” add GEMINI_API_KEY to .env' });
     }
 
     const model = client.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-3.8-flash',
     });
 
     const result_gen = await model.generateContent([
@@ -103,3 +103,4 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
+

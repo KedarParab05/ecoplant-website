@@ -1,4 +1,4 @@
-{
+﻿{
   "version": 2,
   "builds": [
     {
@@ -23,6 +23,7 @@
     { "src": "/sitemap\\.xml", "dest": "/sitemap.xml" },
     { "src": "/quiz\\.html",   "dest": "/quiz.html" },
     { "src": "/doctor\\.html", "dest": "/doctor.html" },
+    { "src": "/room-design\\.html", "dest": "/room-design.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
   "headers": [
@@ -54,3 +55,4 @@
     }
   ]
 }
+

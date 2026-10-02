@@ -1,5 +1,5 @@
-/**
- * routes/chat.js — EcoBot AI chat (Gemini-powered)
+﻿/**
+ * routes/chat.js â€” EcoBot AI chat (Gemini-powered)
  * POST /api/chat  { messages: [{role, content}] }
  */
 
@@ -17,22 +17,22 @@ function getClient() {
   return genAI;
 }
 
-const SYSTEM_PROMPT = `You are EcoBot, a friendly and knowledgeable AI plant care assistant for EcoPlant — a premium Indian plant shop.
+const SYSTEM_PROMPT = `You are EcoBot, a friendly and knowledgeable AI plant care assistant for EcoPlant â€” a premium Indian plant shop.
 
 Your expertise covers:
-• Plant identification and species information
-• Plant health diagnosis and treatment recommendations
-• Watering, fertilising, and soil advice
-• Light requirements and placement guidance
-• Pest and disease management
-• Seasonal care tips specific to Indian climates
-• Recommendations for plants based on space, experience level, and light conditions
+â€¢ Plant identification and species information
+â€¢ Plant health diagnosis and treatment recommendations
+â€¢ Watering, fertilising, and soil advice
+â€¢ Light requirements and placement guidance
+â€¢ Pest and disease management
+â€¢ Seasonal care tips specific to Indian climates
+â€¢ Recommendations for plants based on space, experience level, and light conditions
 
-Tone: Warm, encouraging, and practical. Use relevant plant emojis. Keep answers concise (2–4 short paragraphs max). Always end with an actionable tip.
+Tone: Warm, encouraging, and practical. Use relevant plant emojis. Keep answers concise (2â€“4 short paragraphs max). Always end with an actionable tip.
 
 Context: You serve Indian plant enthusiasts. Prices are in INR. Be aware of Indian seasons (Summer, Monsoon, Post-Monsoon, Winter) and Indian climate zones (tropical, subtropical, temperate).`;
 
-// ── POST /api/chat ─────────────────────────────────────────────────────────────
+// â”€â”€ POST /api/chat â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post('/', async (req, res) => {
   try {
     const { messages } = req.body;
@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
       // Graceful fallback when no API key configured
       return res.status(503).json({
         error: 'AI service not configured',
-        reply: "I'm currently offline for maintenance 🌿 Please try again later or browse our plant collection!",
+        reply: "I'm currently offline for maintenance ðŸŒ¿ Please try again later or browse our plant collection!",
       });
     }
 
@@ -62,7 +62,7 @@ router.post('/', async (req, res) => {
     const trimmedMessages = messages.slice(-20);
 
     const model = client.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-3.8-flash',
       systemInstruction: SYSTEM_PROMPT,
     });
 
@@ -87,13 +87,14 @@ router.post('/', async (req, res) => {
 
     // Return a user-friendly error rather than crashing
     if (err.status === 401 || err.message?.includes('API key')) {
-      return res.status(500).json({ error: 'AI API key invalid', reply: 'AI service temporarily unavailable 🌿' });
+      return res.status(500).json({ error: 'AI API key invalid', reply: 'AI service temporarily unavailable ðŸŒ¿' });
     }
     if (err.status === 429 || err.message?.includes('quota')) {
-      return res.status(429).json({ error: 'Rate limit reached', reply: 'I\'m a bit busy right now 🌿 Please try again in a moment!' });
+      return res.status(429).json({ error: 'Rate limit reached', reply: 'I\'m a bit busy right now ðŸŒ¿ Please try again in a moment!' });
     }
     res.status(500).json({ error: err.message, reply: 'Something went wrong. Please try again!' });
   }
 });
 
 module.exports = router;
+
