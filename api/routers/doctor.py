@@ -1,5 +1,5 @@
-"""
-routers/doctor.py — AI Plant Doctor via Google Gemini Vision — Security Hardened
+﻿"""
+routers/doctor.py â€” AI Plant Doctor via Google Gemini Vision â€” Security Hardened
 POST /api/doctor  { image: base64string, mimeType: "image/jpeg" }
 """
 
@@ -64,7 +64,7 @@ def parse_json(raw: str) -> dict:
     cleaned = re.sub(r'^```(?:json)?\n?', '', raw.strip(), flags=re.IGNORECASE)
     cleaned = re.sub(r'\n?```$', '', cleaned).strip()
     data = json.loads(cleaned)
-    # Whitelist allowed keys only — strip anything unexpected
+    # Whitelist allowed keys only â€” strip anything unexpected
     allowed = {"plantName", "scientificName", "confidence", "healthStatus",
                "healthScore", "healthDotClass", "diagnosis", "issues", "treatments"}
     return {k: v for k, v in data.items() if k in allowed}
@@ -103,7 +103,7 @@ class DoctorBody(BaseModel):
 async def doctor(request: Request, body: DoctorBody):
     client = get_client()
     if not client:
-        raise HTTPException(503, "AI service not configured — add GEMINI_API_KEY to .env")
+        raise HTTPException(503, "AI service not configured â€” add GEMINI_API_KEY to .env")
 
     # Decode and validate actual image bytes
     try:
@@ -130,12 +130,22 @@ async def doctor(request: Request, body: DoctorBody):
 
     try:
         import google.generativeai as genai
-        model = genai.GenerativeModel(model_name="gemini-2.0-flash")
-        result_gen = model.generate_content([
-            {"mime_type": detected, "data": image_bytes},
-            DOCTOR_PROMPT,
-        ])
-        raw = result_gen.text
+        raw = None
+        for m_name in ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"]:
+            try:
+                model = genai.GenerativeModel(model_name=m_name)
+                result_gen = model.generate_content([
+                    {"mime_type": detected, "data": image_bytes},
+                    DOCTOR_PROMPT,
+                ])
+                if result_gen and result_gen.text:
+                    raw = result_gen.text
+                    break
+            except Exception:
+                continue
+
+        if not raw:
+            raise ValueError("All vision models failed")
 
         try:
             result = parse_json(raw)

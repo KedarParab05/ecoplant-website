@@ -1,5 +1,5 @@
-"""
-routers/chat.py — EcoBot AI chat (Gemini) — Security Hardened
+﻿"""
+routers/chat.py — EcoBot AI chat (Gemini) — Security Hardened with Fallback
 POST /api/chat  { messages: [{role, content}] }
 """
 
@@ -60,7 +60,6 @@ class Message(BaseModel):
     def validate_content(cls, v):
         if not isinstance(v, str):
             raise ValueError("content must be a string")
-        # Limit individual message length
         if len(v) > 4000:
             raise ValueError("Message too long (max 4000 characters)")
         return v.strip()
@@ -79,15 +78,50 @@ class ChatBody(BaseModel):
         return v
 
 
+def get_fallback_answer(query: str) -> str:
+    q = query.lower()
+    if any(w in q for w in ["beginner", "easy", "starter", "new"]):
+        return (
+            "🌿 **Top Recommendations for Beginners:**\n\n"
+            "1. **Snake Plant (Sansevieria):** Virtually indestructible, thrives in low light, and only needs water every 2–3 weeks.\n"
+            "2. **ZZ Plant (Zamioculcas):** Handles neglect beautifully and tolerates dry indoor air.\n"
+            "3. **Golden Pothos:** Fast-growing trailing vine that tells you when it needs water by slightly wilting.\n\n"
+            "💡 *Pro-Tip:* More houseplants die from overwatering than underwatering. When in doubt, wait a couple more days!"
+        )
+    elif any(w in q for w in ["water", "watering", "dry"]):
+        return (
+            "💧 **Houseplant Watering Guide:**\n\n"
+            "• Use the **finger test**: Insert your index finger 2 inches into the soil. Water only if dry.\n"
+            "• Always ensure the pot has drainage holes so roots don't sit in stagnant water.\n"
+            "• In Indian summers, water more frequently; during monsoons and winter, reduce watering.\n\n"
+            "💡 *Pro-Tip:* Morning is the best time to water your plants so excess moisture evaporates during the day."
+        )
+    elif any(w in q for w in ["yellow", "leaf", "leaves", "dying"]):
+        return (
+            "🍃 **Why Plant Leaves Turn Yellow:**\n\n"
+            "1. **Overwatering:** The #1 cause. Check if the lower soil is soggy or smells sour.\n"
+            "2. **Poor Drainage:** Water sitting in the saucer chokes roots.\n"
+            "3. **Low Light or Age:** Natural shedding of older bottom leaves is normal.\n\n"
+            "💡 *Pro-Tip:* Inspect root health. If roots are firm and white/tan, prune the yellow leaf and adjust moisture."
+        )
+    elif any(w in q for w in ["sun", "light", "indoor"]):
+        return (
+            "☀️ **Light Requirements Guide:**\n\n"
+            "• **Bright Indirect Light:** Perfect for Monstera, Fiddle Leaf Fig, and Calatheas (near an east or north window).\n"
+            "• **Low Light:** Ideal for Snake Plant, ZZ Plant, and Aglaonema (can sit farther into rooms).\n"
+            "• **Direct Sun:** Needed for succulents, cacti, and flowering plants like Bougainvillea.\n\n"
+            "💡 *Pro-Tip:* Avoid harsh midday sun on indoor tropicals to prevent leaf scorch!"
+        )
+    return (
+        "🌱 Hello! I'm **EcoBot**, your plant care expert. I can help you with watering schedules, choosing the right plant for your light conditions, troubleshooting yellow leaves, or recommending low-maintenance houseplants.\n\n"
+        "How can I assist your garden today?"
+    )
+
+
 @router.post("/")
-@limiter.limit("10/minute")
+@limiter.limit("15/minute")
 async def chat(request: Request, body: ChatBody):
     client = get_client()
-    if not client:
-        return {
-            "error": "AI service not configured",
-            "reply": "I'm currently offline for maintenance 🌿 Please try again later!",
-        }
 
     # Keep last 20 messages (token budget)
     trimmed = body.messages[-20:]
@@ -96,29 +130,28 @@ async def chat(request: Request, body: ChatBody):
     if trimmed[-1].role != "user":
         raise HTTPException(400, "Last message must be from the user")
 
-    try:
-        model = client.GenerativeModel(
-            model_name="gemini-2.0-flash",
-            system_instruction=SYSTEM_PROMPT,
-            safety_settings={
-                "HARM_CATEGORY_HARASSMENT": "BLOCK_MEDIUM_AND_ABOVE",
-                "HARM_CATEGORY_HATE_SPEECH": "BLOCK_MEDIUM_AND_ABOVE",
-                "HARM_CATEGORY_SEXUALLY_EXPLICIT": "BLOCK_MEDIUM_AND_ABOVE",
-                "HARM_CATEGORY_DANGEROUS_CONTENT": "BLOCK_MEDIUM_AND_ABOVE",
-            }
-        )
-        history = [
-            {"role": "model" if m.role == "assistant" else "user", "parts": [m.content]}
-            for m in trimmed[:-1]
-        ]
-        chat_session = model.start_chat(history=history)
-        result = chat_session.send_message(trimmed[-1].content)
-        return {"reply": result.text}
+    user_query = trimmed[-1].content
 
-    except Exception as e:
-        msg = str(e)
-        if "API key" in msg or "401" in msg:
-            raise HTTPException(503, "AI service temporarily unavailable 🌿")
-        if "429" in msg or "quota" in msg.lower():
-            raise HTTPException(429, "I'm a bit busy right now 🌿 Please try again in a moment!")
-        raise HTTPException(500, "Something went wrong. Please try again!")
+    if not client:
+        return {"reply": get_fallback_answer(user_query)}
+
+    models_to_try = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"]
+    for m_name in models_to_try:
+        try:
+            model = client.GenerativeModel(
+                model_name=m_name,
+                system_instruction=SYSTEM_PROMPT,
+            )
+            history = [
+                {"role": "model" if m.role == "assistant" else "user", "parts": [m.content]}
+                for m in trimmed[:-1]
+            ]
+            chat_session = model.start_chat(history=history)
+            result = chat_session.send_message(user_query)
+            if result and result.text:
+                return {"reply": result.text}
+        except Exception as e:
+            continue
+
+    # Fallback if Gemini quota or models are unavailable
+    return {"reply": get_fallback_answer(user_query)}
